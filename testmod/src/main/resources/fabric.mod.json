@@ -1,0 +1,35 @@
+{
+	"schemaVersion": 1,
+	"id": "fluidlib-testmod",
+	"version": "TEST",
+	"name": "Fluid Lib Test Mod",
+	"description": "Test mod for Fluid Lib",
+	"authors": [
+		"redColmula55"
+	],
+	"contact": {
+		"homepage": "https://github.com/redColmula55/fluid-lib",
+		"sources": "https://github.com/redColmula55/fluid-lib",
+		"issues": "https://github.com/redColmula55/fluid-lib/issues"
+	},
+	"license": "LGPL-2.1 or later",
+	"icon": "assets/fluidlib/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"rc55.mc.testmod.fluidlib.TestModMain"
+		],
+		"client": [
+			"rc55.mc.testmod.fluidlib.TestModClient"
+		],
+		"fabric-datagen": [
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.15.0",
+		"minecraft": "~${minecraft_version}",
+		"java": ">=${java_version}",
+		"fabric-api": "*",
+        "fluidlib": "*"
+	}
+}

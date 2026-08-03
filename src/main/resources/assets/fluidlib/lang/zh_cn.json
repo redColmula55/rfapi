@@ -1,0 +1,7 @@
+{
+  "modmenu.nameTranslation.fluidlib": "水库",
+  "modmenu.descriptionTranslation.fluidlib": "这是一个可以让开发者们在 Fabric 上更轻松的创建/操作流体.",
+
+  "tooltip.fluidlib.bucket.temperature": "温度: %sK (%s℃)",
+  "tooltip.fluidlib.bucket.max_temperature": "最大温度: %sK (%s℃)"
+}

@@ -1,0 +1,41 @@
+{
+  "required": true,
+  "package": "rc55.mc.fluidlib.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "plugin": "rc55.mc.fluidlib.mixin.compat.FluidLibMixinPlugin",
+  "mixins": [
+    "BoatEntityMixin",
+    "BucketItemMixin",
+    "CoralBlockBlockMixin",
+    "CoralParentBlockMixin",
+    "EntityMixin",
+    "EntityNavigationMixin",
+    "FishingBobberEntityMixin",
+    "FlowableFluidAccessor",
+    "FlowableFluidMixin",
+    "FluidBlockMixin",
+    "FluidMixin",
+    "FluidStateMixin",
+    "ItemEntityMixin",
+    "LandPathNodeMakerMixin",
+    "LavaFluidMixin",
+    "LivingEntityMixin",
+    "MobNavigationMixin",
+    "StayAboveWaterTaskMixin",
+    "SwimGoalMixin",
+    "WaterCreatureEntityMixin",
+    "WaterFluidMixin",
+    "WaterloggablePlantBlocksMixin",
+    "WaterPathNodeMakerMixin"
+  ],
+  "client": [
+    "client.BackgroundRendererMixin",
+    "client.ClientPlayerEntityMixin",
+    "compat.client.FluidRendererMixin"
+  ],
+  "server": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+	}
+}

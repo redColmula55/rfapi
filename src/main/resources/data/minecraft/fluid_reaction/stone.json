@@ -1,0 +1,14 @@
+{
+  "type": "flows_into",
+  "ingredient": [
+    "minecraft:lava",
+    "minecraft:flowing_lava"
+  ],
+  "vertical_material": {
+    "fluid": [
+      "minecraft:water",
+      "minecraft:flowing_water"
+    ]
+  },
+  "result": "minecraft:stone"
+}

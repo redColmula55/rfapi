@@ -1,0 +1,23 @@
+loom {
+    runs {
+        testmodClient {
+            client()
+            ideConfigGenerated project.rootProject == project
+            name = "Testmod Client"
+            source sourceSets.main
+            // For some reason Minecraft and Sodium requires different version of OpenGL
+            vmArg '-Dsodium.checks.issue2561=false'
+        }
+        testmodServer {
+            server()
+            ideConfigGenerated project.rootProject == project
+            name = "Testmod Server"
+            source sourceSets.main
+        }
+    }
+}
+
+dependencies {
+    api project(path: ':', configuration: 'namedElements')
+    include project(':')
+}

@@ -1,0 +1,12 @@
+{
+  "ingredient": [
+    "minecraft:flowing_lava"
+  ],
+  "horizontal_material": {
+    "fluid": [
+      "minecraft:water",
+      "minecraft:flowing_water"
+    ]
+  },
+  "result": "minecraft:cobblestone"
+}

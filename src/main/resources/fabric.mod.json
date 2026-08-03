@@ -1,0 +1,43 @@
+{
+	"schemaVersion": 1,
+	"id": "fluidlib",
+	"version": "${mod_version}+${minecraft_version}",
+	"name": "Fluid Lib",
+	"description": "Fluid Lib is a lib mod intends to make creating fluids in Fabric easier.",
+	"authors": [
+		"redColmula55"
+	],
+	"contact": {
+		"homepage": "https://github.com/redColmula55/fluid-lib",
+		"sources": "https://github.com/redColmula55/fluid-lib",
+		"issues": "https://github.com/redColmula55/fluid-lib/issues"
+	},
+	"license": "LGPL-2.1 or later",
+	"icon": "assets/fluidlib/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"rc55.mc.fluidlib.FluidLib"
+		],
+		"client": [
+			"rc55.mc.fluidlib.FluidLibClient"
+		],
+		"fabric-datagen": [
+		]
+	},
+	"mixins": [
+		"fluidlib.mixins.json"
+	],
+	"accessWidener": "fluidlib.accesswidener",
+	"depends": {
+		"fabricloader": ">=0.15.0",
+		"minecraft": "~${minecraft_version}",
+		"java": ">=${java_version}",
+		"fabric-api": "*"
+	},
+	"custom": {
+		"loom:injected_interfaces": {
+          "net/minecraft/class_3611": ["rc55/mc/fluidlib/fluid/IFluidWithSettings"]
+		}
+	}
+}
