@@ -23,7 +23,11 @@
 			"rc55.mc.fluidlib.FluidLibClient"
 		],
 		"fabric-datagen": [
-		]
+            "rc55.mc.fluidlib.FluidLibDataGenerator"
+		],
+        "modmenu": [
+            "rc55.mc.fluidlib.FluidLibModMenuImpl"
+        ]
 	},
 	"mixins": [
 		"fluidlib.mixins.json"
@@ -33,11 +37,15 @@
 		"fabricloader": ">=0.15.0",
 		"minecraft": "~${minecraft_version}",
 		"java": ">=${java_version}",
-		"fabric-api": "*"
+		"fabric-api": "*",
+        "cloth-config": "*"
 	},
 	"custom": {
 		"loom:injected_interfaces": {
           "net/minecraft/class_3611": ["rc55/mc/fluidlib/fluid/IFluidWithSettings"]
-		}
+		},
+        "modmenu": {
+            "badges": ["library"]
+        }
 	}
 }

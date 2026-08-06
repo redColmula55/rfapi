@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:flowable",
+  "chance": 0.87,
+  "source": [
+    "#minecraft:lava",
+    "minecraft:water"
+  ],
+  "surrounding_ingredient": {
+    "block": [
+      "#minecraft:bamboo_blocks"
+    ]
+  },
+  "vertical_ingredient": {
+    "block": [
+      "minecraft:stone",
+      "minecraft:bedrock"
+    ],
+    "fluid": [
+      "minecraft:empty"
+    ]
+  },
+  "still_result": "minecraft:air",
+  "flowing_result": {
+    "Name": "minecraft:redstone_lamp",
+    "Properties": {
+      "lit": "true"
+    }
+  }
+}

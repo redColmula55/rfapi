@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:flowable",
+  "flowing_result": "minecraft:cobblestone",
+  "source": [
+    "#minecraft:lava"
+  ],
+  "still_result": "minecraft:obsidian",
+  "surrounding_ingredient": {
+    "fluid": [
+      "#minecraft:water"
+    ]
+  }
+}

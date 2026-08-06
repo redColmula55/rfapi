@@ -15,7 +15,7 @@
 
 * 适用MC版本：1.20.1 <br>
 * Fabric版本：0.15.0或以上 <br>
-* 前置mod：Fabric API <br>
+* 前置mod：Fabric API, [Cloth Config API](https://github.com/shedaniel/cloth-config)
 
 <hr>
 <h3>使用协议：</h3>

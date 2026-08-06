@@ -1,0 +1,10 @@
+{
+  "type": "fluidlib:source_conversion",
+  "ingredient": [
+    "minecraft:lava"
+  ],
+  "source": [
+    "fluidlib-testmod:milk/still"
+  ],
+  "result": "minecraft:diamond_ore"
+}

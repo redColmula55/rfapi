@@ -1,28 +1,26 @@
 package rc55.mc.fluidlib;
 
+import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.ConfigHolder;
+import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ModInitializer;
 
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.BucketItem;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rc55.mc.fluidlib.data.*;
-import rc55.mc.fluidlib.fluid.FluidRegistry;
-import rc55.mc.fluidlib.item.BucketItemRegistry;
+import rc55.mc.fluidlib.fluid.reaction.FluidReactionType;
+import rc55.mc.fluidlib.fluid.reaction.IFluidReaction;
 
 public class FluidLib implements ModInitializer {
 	public static final String MODID = "fluidlib";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
 
+    static final ConfigHolder<FluidLibConfigs> CONFIG_HOLDER = AutoConfig.register(FluidLibConfigs.class, GsonConfigSerializer::new);
+
     @Override
 	public void onInitialize() {
-        ResourceReloadListenerImpl.ofServer(Identifier.of(MODID, "fluid_reaction"), FluidReaction.CODEC, FluidReaction.CACHE);
-
-        ServerTickEvents.START_WORLD_TICK.register(world -> FluidReaction.infectionDepth.set(0));
+        FluidReactionType.init();
+        ResourceReloadListenerImpl.ofServer(Identifier.of(MODID, "fluid_reaction"), IFluidReaction.BASE_CODEC, IFluidReaction.CACHE);
 	}
 }

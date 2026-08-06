@@ -1,6 +1,8 @@
 package rc55.mc.fluidlib.fluid;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.Fluid;
@@ -13,7 +15,9 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.*;
 import org.jetbrains.annotations.ApiStatus;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import rc55.mc.fluidlib.data.FluidReaction;
+import rc55.mc.fluidlib.FluidLibConfigs;
+import rc55.mc.fluidlib.fluid.reaction.FluidReactionType;
+import rc55.mc.fluidlib.fluid.reaction.IFluidReaction;
 import rc55.mc.fluidlib.mixin.FlowableFluidAccessor;
 
 import java.util.Random;
@@ -25,7 +29,7 @@ import java.util.Random;
 public class FluidHelper {
     /**
      * Calculates if a fluid can flow "into" another fluid(treat that fluid like air and flow through)
-     * This handles {@link FluidReaction.Type#FLOWS_INTO} logics so it needs to be hooked to vanilla fluids
+     * This handles {@link FluidReactionType#FLOW_INTO} logics so it needs to be hooked to vanilla fluids
      * Here we extract it into a static method so we can perform the hook with {@linkplain rc55.mc.fluidlib.mixin.FluidStateMixin#fluidlib$hookCustomFlowIntoLogic(Fluid, FluidState, BlockView, BlockPos, Fluid, Direction) mixins}
      * @param self The fluid instance which tries to call this method
      * @param state Fluid state to flow into
@@ -41,21 +45,7 @@ public class FluidHelper {
         if (state.isEmpty()) return true;
         if (self.matchesType(fluid)) return false;
         if (world instanceof WorldAccess) {
-            for (final FluidReaction reaction : FluidReaction.CACHE.get(fluid)) {
-                final BlockPos sourcePos = pos.offset(direction.getOpposite());
-                final BlockState sourceState = world.getBlockState(sourcePos);
-                // Check if the fluid allows this to flow in
-                if (reaction.checkReaction(FluidReaction.Type.FLOWS_INTO, (WorldAccess) world, pos, world.getBlockState(pos))) {
-                    reaction.performReaction((WorldAccess) world, pos, world.getBlockState(pos));
-                    if (FluidSettings.get(sourceState.getFluidState()).canSetFire()) {
-                        playExtinguishEvent((WorldAccess) world, sourcePos);
-                    }
-                    return false;
-                } else if (reaction.checkReaction(FluidReaction.Type.INFECTION, (WorldAccess) world, pos, world.getBlockState(pos))) {
-                    reaction.performReaction((WorldAccess) world, pos.offset(direction), world.getBlockState(pos.offset(direction)));
-                }
-            }
-
+            IFluidReaction.triggerReaction(FluidReactionType.FLOW_INTO, (WorldAccess) world, pos.offset(direction.getOpposite()), pos);
         }
         return false;
     }
@@ -90,17 +80,9 @@ public class FluidHelper {
 
                     i = Math.max(i, sideFluidState.getLevel());
                 } else if (self.isStill(state.getFluidState()) && sideFluidState.isStill()) {
-                    for (FluidReaction reaction : FluidReaction.CACHE.get(self)) {
-                        if (reaction.getType() == FluidReaction.Type.SOURCE_CONVERSION) {
-                            if (reaction.checkReaction(FluidReaction.Type.SOURCE_CONVERSION, world, sidePos, sideState)) {
-                                reaction.performReaction(world, pos, state);
-                                return reaction.getResult().getFluidState();
-                            }
-                        } else if (reaction.getType() == FluidReaction.Type.INFECTION) {
-                            if (reaction.checkReaction(FluidReaction.Type.INFECTION, world, sidePos, sideState)) {
-                                return reaction.getResult().getFluidState();
-                            }
-                        }
+                    BlockState conversionResult = IFluidReaction.triggerReaction(FluidReactionType.SOURCE_CONVERSION, world, sidePos, pos);
+                    if (conversionResult != null) {
+                        return conversionResult.getFluidState();
                     }
                 }
             }
@@ -130,6 +112,55 @@ public class FluidHelper {
             int k = i - levelDecreasePerBlock;
             return k <= 0 ? Fluids.EMPTY.getDefaultState() : self.getFlowing(k, false);
         }
+    }
+
+    /**
+     * Called when the fluid receives
+     * This handles {@link FluidReactionType#INFECTION} logics so it needs to be hooked to vanilla fluids
+     * Here we extract it into a static method so we can perform the hook with {@linkplain rc55.mc.fluidlib.mixin.FlowableFluidMixin#onScheduledTick(World, BlockPos, FluidState) mixins}
+     * @param self The fluid instance which tries to call this method
+     * @param world World instance
+     * @param pos Pos to update
+     * @param state Fluid state used to be in the pos
+     * @param levelDecreasePerBlock See {@link FlowableFluid#getLevelDecreasePerBlock(WorldView)}
+     * @see Fluid#onScheduledTick(World, BlockPos, FluidState)
+     */
+    @ApiStatus.Internal
+    public static void onScheduledTick(FlowableFluid self, World world, BlockPos pos, FluidState state, int levelDecreasePerBlock) {
+        // Do nothing if fluid updates are not allowed
+        if (!FluidLibConfigs.getInstance().fluidUpdates) {
+            return;
+        }
+
+        boolean infection = false;
+        for (Direction direction : Direction.values()) {
+            final BlockPos targetPos = pos.offset(direction);
+            BlockState infected = IFluidReaction.triggerReaction(FluidReactionType.INFECTION, world, pos, targetPos);
+            if (infected != null) {
+                infection = true;
+                world.scheduleFluidTick(targetPos, infected.getFluidState().getFluid(), ((FlowableFluidAccessor)self).invoke_getNextTickDelay(world, targetPos, state, infected.getFluidState()));
+                world.updateNeighborsAlways(targetPos, infected.getBlock());
+            }
+        }
+        if (infection) return;
+
+        // Vanilla tick
+        if (!state.isStill()) {
+            FluidState fluidState = getUpdatedState(self, world, pos, world.getBlockState(pos), levelDecreasePerBlock);
+            int i = ((FlowableFluidAccessor)self).invoke_getNextTickDelay(world, pos, state, fluidState);
+            if (fluidState.isEmpty()) {
+                state = fluidState;
+                world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
+            } else if (!fluidState.equals(state)) {
+                state = fluidState;
+                BlockState blockState = fluidState.getBlockState();
+                world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
+                world.scheduleFluidTick(pos, fluidState.getFluid(), i);
+                world.updateNeighborsAlways(pos, blockState.getBlock());
+            }
+        }
+
+        ((FlowableFluidAccessor)self).invoke_tryFlow(world, pos, state);
     }
 
     public static void playExtinguishEvent(WorldAccess world, BlockPos pos) {

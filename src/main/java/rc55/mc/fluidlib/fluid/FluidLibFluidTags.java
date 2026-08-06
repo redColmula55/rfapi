@@ -33,6 +33,16 @@ public class FluidLibFluidTags {
      */
     public static final TagKey<Fluid> DISAPPEAR_IN_ULTRAWARM = ofConventional("disappear_in_ultrawarm");
 
+    /**
+     * Still factor of the fluid
+     */
+    public static final TagKey<Fluid> STILL = ofConventional("still");
+
+    /**
+     * Flowing factor of the fluid
+     */
+    public static final TagKey<Fluid> FLOWING = ofConventional("flowing");
+
     public static TagKey<Fluid> of(Identifier id) {
         return TagKey.of(RegistryKeys.FLUID, id);
     }

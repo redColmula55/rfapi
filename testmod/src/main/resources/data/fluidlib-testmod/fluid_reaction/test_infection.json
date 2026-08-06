@@ -1,0 +1,7 @@
+{
+  "type": "fluidlib:infection",
+  "source": "fluidlib-testmod:milk/still",
+  "target": [
+    "#minecraft:water"
+  ]
+}

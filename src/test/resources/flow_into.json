@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:flow_into",
+  "source": [
+    "#minecraft:lava"
+  ],
+  "ingredient": [
+    "#minecraft:water"
+  ],
+  "result": "minecraft:stone"
+}

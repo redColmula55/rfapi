@@ -15,6 +15,7 @@ import rc55.mc.fluidlib.fluid.FluidRegistry;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -56,6 +57,18 @@ public class FluidIngredient implements Predicate<Fluid> {
     public static final Codec<FluidIngredient> CODEC = Entry.CODEC.listOf().xmap(FluidIngredient::new, FluidIngredient::list);
 
     @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof FluidIngredient) {
+            return this.stream().allMatch(e -> ((FluidIngredient) obj).matching.stream().anyMatch(e::equals));
+        } else return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this.matching.stream().findAny());
+    }
+
+    @Override
     public boolean test(Fluid fluid) {
         return this.matching.stream().anyMatch(entry -> entry.test(fluid));
     }
@@ -94,7 +107,7 @@ public class FluidIngredient implements Predicate<Fluid> {
         }
 
         public Entry(TagKey<Fluid> tag) {
-            this.id = tag.toString();
+            this.id = "#" + tag.id();
             this.tag = tag;
         }
 
@@ -110,6 +123,18 @@ public class FluidIngredient implements Predicate<Fluid> {
         @Override
         public String toString() {
             return this.id;
+        }
+
+        @Override
+        public int hashCode() {
+            return this.toString().hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof Entry) {
+                return this.id.equals(((Entry) obj).id);
+            } else return false;
         }
 
         public Stream<Fluid> stream() {

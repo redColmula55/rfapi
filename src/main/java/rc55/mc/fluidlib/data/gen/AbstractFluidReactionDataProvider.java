@@ -9,11 +9,12 @@ import net.minecraft.data.DataWriter;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 import rc55.mc.fluidlib.FluidLib;
 import rc55.mc.fluidlib.data.FluidIngredient;
-import rc55.mc.fluidlib.data.FluidReaction;
 import rc55.mc.fluidlib.data.StateIngredient;
 import rc55.mc.fluidlib.fluid.FluidReference;
+import rc55.mc.fluidlib.fluid.reaction.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,7 @@ public abstract class AbstractFluidReactionDataProvider implements DataProvider 
         final List<CompletableFuture<?>> features = new ArrayList<>();
 
         this.generate((id, reaction) ->
-            FluidReaction.CODEC.encodeStart(JsonOps.INSTANCE, reaction).promotePartial(FluidLib.LOGGER::error).result().ifPresentOrElse(json ->
+            IFluidReaction.BASE_CODEC.encodeStart(JsonOps.INSTANCE, reaction).promotePartial(FluidLib.LOGGER::error).result().ifPresentOrElse(json ->
                 features.add(DataProvider.writeToPath(writer, json,
                         this.dataOutput.getResolver(DataOutput.OutputType.DATA_PACK, "fluid_reaction").resolve(id, "json")
                 ))
@@ -52,97 +53,97 @@ public abstract class AbstractFluidReactionDataProvider implements DataProvider 
     @ApiStatus.NonExtendable
     @FunctionalInterface
     public interface ReactionBuilder {
-        void append(Identifier id, FluidReaction reaction);
+        void append(Identifier id, IFluidReaction<?> reaction);
 
         /**
          * Generate a fluid reaction data with defaulted name
          * @param reaction The reaction instance
-         * @see #createDefaultId(FluidReaction) Default id format
+         * @see #createDefaultId(IFluidReaction) Default id format
          */
-        default void append(FluidReaction reaction) {
+        default void append(IFluidReaction<?> reaction) {
             this.append(this.createDefaultId(reaction), reaction);
         }
 
         default void ofReaction(
                 Identifier id,
-                FluidIngredient ingredient,
-                Optional<StateIngredient> horizontalMaterial,
-                Optional<StateIngredient> verticalMaterial,
+                FluidIngredient source,
+                @Nullable StateIngredient surroundingIngredient,
+                @Nullable StateIngredient verticalIngredient,
                 float chance,
                 BlockState result
         ) {
-            this.append(id, new FluidReaction(FluidReaction.Type.REACTION, ingredient, chance, horizontalMaterial, verticalMaterial, result));
+            this.append(id, new SimpleFluidReaction(source, chance, Optional.ofNullable(surroundingIngredient), Optional.ofNullable(verticalIngredient), result));
         }
 
         default void ofReaction(
-                FluidIngredient ingredient,
-                Optional<StateIngredient> horizontalMaterial,
-                Optional<StateIngredient> verticalMaterial,
+                FluidIngredient source,
+                @Nullable StateIngredient surroundingIngredient,
+                @Nullable StateIngredient verticalIngredient,
                 float chance,
                 BlockState result
         ) {
-            this.ofReaction(this.createDefaultId(result), ingredient, horizontalMaterial, verticalMaterial, chance, result);
+            this.ofReaction(this.createDefaultId(result), source, surroundingIngredient, verticalIngredient, chance, result);
+        }
+
+        default void ofReaction(
+                Identifier id,
+                FluidIngredient source,
+                @Nullable StateIngredient surroundingIngredient,
+                @Nullable StateIngredient verticalIngredient,
+                float chance,
+                BlockState stillResult,
+                BlockState flowingResult
+        ) {
+            this.append(id, new SimpleFlowableFluidReaction(
+                    source, chance, Optional.ofNullable(surroundingIngredient), Optional.ofNullable(verticalIngredient), stillResult, flowingResult
+            ));
         }
 
         default void ofFlowIn(
-                Identifier id, FluidIngredient ingredient, StateIngredient material, float chance, BlockState result
+                Identifier id, FluidIngredient source, FluidIngredient ingredient, float chance, BlockState result
         ) {
-            this.append(id, new FluidReaction(FluidReaction.Type.FLOWS_INTO, ingredient, chance, Optional.empty(), Optional.of(material), result));
+            this.append(id, new FlowIntoReaction(source, chance, ingredient, result));
         }
 
         default void ofFlowIn(
-                FluidIngredient ingredient, StateIngredient material, float chance, BlockState result
+                FluidIngredient source, FluidIngredient ingredient, float chance, BlockState result
         ) {
-            this.ofFlowIn(this.createDefaultId(result), ingredient, material, chance, result);
+            this.ofFlowIn(this.createDefaultId(result), source, ingredient, chance, result);
         }
 
         default void ofSourceConversion(
                 Identifier id,
+                FluidIngredient source,
                 FluidIngredient ingredient,
-                FluidIngredient material,
                 float chance,
                 BlockState result
         ) {
-            this.append(id, new FluidReaction(
-                    FluidReaction.Type.SOURCE_CONVERSION,
-                    ingredient,
-                    chance,
-                    Optional.of(StateIngredient.fromFluids(material)),
-                    Optional.empty(),
-                    result
-            ));
+            this.append(id, new SourceConversionReaction(source, chance, ingredient, result));
         }
 
         default void ofSourceConversion(
+                FluidIngredient source,
                 FluidIngredient ingredient,
-                FluidIngredient material,
                 float chance,
                 BlockState result
         ) {
-            this.ofSourceConversion(this.createDefaultId(result), ingredient, material, chance, result);
+            this.ofSourceConversion(this.createDefaultId(result), source, ingredient, chance, result);
         }
 
         default void ofInfection(
-                Identifier id, FluidReference<?> fluid, FluidIngredient material, float chance
+                Identifier id, FluidReference<?> source, FluidIngredient target, float chance
         ) {
-            this.append(id, new FluidReaction(
-                    FluidReaction.Type.INFECTION,
-                    FluidIngredient.of(fluid),
-                    chance,
-                    Optional.of(StateIngredient.fromFluids(material)),
-                    Optional.empty(),
-                    fluid.getBlock().getDefaultState()
-            ));
+            this.append(id, new InfectionReaction(source.getStill(), target, chance));
         }
 
         default void ofInfection(
-                FluidReference<?> fluid, FluidIngredient material, float chance
+                FluidReference<?> source, FluidIngredient target, float chance
         ) {
-            this.ofInfection(fluid.getBlockId(), fluid, material, chance);
+            this.ofInfection(source.getBlockId(), source, target, chance);
         }
 
-        default Identifier createDefaultId(FluidReaction reaction) {
-            return Registries.BLOCK.getId(reaction.getResult().getBlock());
+        default Identifier createDefaultId(IFluidReaction<?> reaction) {
+            return this.createDefaultId(reaction.getResult());
         }
 
         default Identifier createDefaultId(BlockState result) {

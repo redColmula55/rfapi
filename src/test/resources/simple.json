@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:simple",
+  "source": [
+    "#minecraft:lava",
+    "minecraft:water"
+  ],
+  "surrounding_ingredient": {
+    "block": [
+      "#minecraft:bamboo_blocks"
+    ]
+  },
+  "result": {
+    "Name": "minecraft:redstone_lamp",
+    "Properties": {
+      "lit": "true"
+    }
+  }
+}

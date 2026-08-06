@@ -15,7 +15,7 @@ This is a lib mod intends to make creating fluids in Fabric easier.
 
 * Minecraft version: 1.20.1 <br>
 * Fabric version: 0.15.0 or greater <br>
-* Required Dependency Mods: Fabric API
+* Required Dependency Mods: Fabric API, [Cloth Config API](https://github.com/shedaniel/cloth-config)
 
 <hr>
 <h3>License:</h3>

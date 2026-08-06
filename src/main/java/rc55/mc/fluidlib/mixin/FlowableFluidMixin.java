@@ -29,4 +29,9 @@ public abstract class FlowableFluidMixin extends Fluid {
     protected boolean canBeReplacedWith(FluidState state, BlockView world, BlockPos pos, Fluid fluid, Direction direction) {
         return FluidHelper.canBeReplacedWith(this, state, world, pos, fluid, direction);
     }
+
+    @Override
+    public void onScheduledTick(World world, BlockPos pos, FluidState state) {
+        FluidHelper.onScheduledTick((FlowableFluid)(Object) this, world, pos, state, this.getLevelDecreasePerBlock(world));
+    }
 }

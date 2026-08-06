@@ -1,0 +1,10 @@
+{
+  "type": "fluidlib:source_conversion",
+  "source": [
+    "#minecraft:lava"
+  ],
+  "ingredient": [
+    "#minecraft:water"
+  ],
+  "result": "minecraft:grass_block"
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:simple",
+  "result": "minecraft:basalt",
+  "source": [
+    "#minecraft:lava"
+  ],
+  "surrounding_ingredient": {
+    "block": [
+      "minecraft:blue_ice"
+    ]
+  },
+  "vertical_ingredient": {
+    "block": [
+      "minecraft:soul_soil"
+    ]
+  }
+}

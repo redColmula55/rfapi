@@ -1,5 +1,6 @@
 package rc55.mc.fluidlib.mixin.client;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.Camera;
@@ -16,6 +17,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import rc55.mc.fluidlib.FluidLibConfigs;
 import rc55.mc.fluidlib.fluid.FluidSettings;
 
 @Mixin(BackgroundRenderer.class)
@@ -63,6 +65,17 @@ public class BackgroundRendererMixin {
             }
         }
         return instance.getSubmersionType();
+    }
+
+    @Inject(at = @At("TAIL"), method = "applyFog")
+    private static void fluidlib$clearFogOnConfig(Camera camera, BackgroundRenderer.FogType fogType, float viewDistance, boolean thickFog, float tickDelta, CallbackInfo ci) {
+        if (camera.getSubmersionType() == CameraSubmersionType.LAVA && FluidLibConfigs.getInstance().clearLavaFog) {
+            RenderSystem.setShaderFogStart(-8f);
+            RenderSystem.setShaderFogEnd(viewDistance * 0.1f);
+        } else if (camera.getSubmersionType() == CameraSubmersionType.POWDER_SNOW && FluidLibConfigs.getInstance().clearSnowFog) {
+            RenderSystem.setShaderFogStart(-8f);
+            RenderSystem.setShaderFogEnd(viewDistance * 0.1f);
+        }
     }
 
     @Unique

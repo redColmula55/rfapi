@@ -1,0 +1,6 @@
+{
+  "type": "fluidlib:infection",
+  "source": "minecraft:water",
+  "target": [],
+  "chance": 0.5
+}

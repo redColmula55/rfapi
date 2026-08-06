@@ -2,14 +2,11 @@ package rc55.mc.fluidlib.data;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import io.netty.handler.codec.DecoderException;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
@@ -26,7 +23,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class ResourceReloadListenerImpl<T> implements SimpleSynchronousResourceReloadListener {
-
+    private final ResourceType type;
     private final Identifier id;
     private final String path;
     private final ResourceMap<?, T> resourceMap;
@@ -40,7 +37,7 @@ public class ResourceReloadListenerImpl<T> implements SimpleSynchronousResourceR
         this.codec = resourceCodec;
         this.parser = null;
         this.resourceMap = resourceMap;
-        ResourceManagerHelper.get(type).registerReloadListener(this);
+        this.type = type;
     }
 
     public ResourceReloadListenerImpl(ResourceType type, Identifier id, String path, ResourceMap<?, T> resourceMap, @NotNull Function<JsonElement, T> resourceParser) {
@@ -49,7 +46,7 @@ public class ResourceReloadListenerImpl<T> implements SimpleSynchronousResourceR
         this.codec = null;
         this.parser = resourceParser;
         this.resourceMap = resourceMap;
-        ResourceManagerHelper.get(type).registerReloadListener(this);
+        this.type = type;
     }
 
     /**
@@ -61,7 +58,12 @@ public class ResourceReloadListenerImpl<T> implements SimpleSynchronousResourceR
      * @param <T> Resource type
      */
     public static <T> ResourceReloadListenerImpl<T> ofServer(Identifier id, Codec<T> codec, ResourceMap<?, T> cache) {
-        return new ResourceReloadListenerImpl<>(ResourceType.SERVER_DATA, id, id.getPath(), codec, cache);
+        return new ResourceReloadListenerImpl<>(ResourceType.SERVER_DATA, id, id.getPath(), codec, cache).register();
+    }
+
+    public ResourceReloadListenerImpl<T> register() {
+        ResourceManagerHelper.get(this.type).registerReloadListener(this);
+        return this;
     }
 
     @Override
@@ -84,7 +86,7 @@ public class ResourceReloadListenerImpl<T> implements SimpleSynchronousResourceR
                 } else {
                     throw new IllegalStateException("How");
                 }
-                //去除资源id的前缀及扩展名
+                // Remove prefix & extension for the resource id
                 resources.put(id.withPath(s -> s.matches("\\w+/[\\w/.]+") ? s.substring(s.indexOf('/') + 1, s.length() - 5) : s), result);
             } catch (Throwable e) {
                 FluidLib.LOGGER.error("Failed to load resource {}: {}", entry.getKey(), e);

@@ -328,7 +328,7 @@ public class ExtendedFluid extends FlowableFluid implements IFluidWithSettings {
 
     @Override
     public void onScheduledTick(World world, BlockPos pos, FluidState state) {
-        super.onScheduledTick(world, pos, state);
+        FluidHelper.onScheduledTick(this, world, pos, state, this.getLevelDecreasePerBlock(world));
     }
 
     @Override

@@ -1,7 +1,7 @@
 {
 	"schemaVersion": 1,
 	"id": "fluidlib-testmod",
-	"version": "TEST",
+	"version": "1.0",
 	"name": "Fluid Lib Test Mod",
 	"description": "Test mod for Fluid Lib",
 	"authors": [
@@ -13,7 +13,7 @@
 		"issues": "https://github.com/redColmula55/fluid-lib/issues"
 	},
 	"license": "LGPL-2.1 or later",
-	"icon": "assets/fluidlib/icon.png",
+	"icon": "assets/fluidlib-testmod/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [

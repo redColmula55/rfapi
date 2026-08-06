@@ -13,6 +13,7 @@ import net.minecraft.util.Identifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -32,12 +33,28 @@ public class BlockIngredient implements Predicate<Block> {
         return new BlockIngredient(Stream.of(blocks).map(Entry::new));
     }
 
+    public static BlockIngredient of(TagKey<Block> tag) {
+        return builder().add(tag).build();
+    }
+
     public static Builder builder() {
         return new Builder();
     }
 
     public static final BlockIngredient EMPTY = new BlockIngredient(ImmutableList.of());
     public static final Codec<BlockIngredient> CODEC = Entry.CODEC.listOf().xmap(BlockIngredient::new, BlockIngredient::list);
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof BlockIngredient) {
+            return this.stream().allMatch(e -> ((BlockIngredient) obj).matching.stream().anyMatch(e::equals));
+        } else return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this.matching.stream().findAny());
+    }
 
     @Override
     public boolean test(Block block) {
@@ -78,7 +95,7 @@ public class BlockIngredient implements Predicate<Block> {
         }
 
         public Entry(TagKey<Block> tag) {
-            this.id = tag.toString();
+            this.id = "#" + tag.id();
             this.tag = tag;
         }
 
@@ -94,6 +111,18 @@ public class BlockIngredient implements Predicate<Block> {
         @Override
         public String toString() {
             return this.id;
+        }
+
+        @Override
+        public int hashCode() {
+            return this.toString().hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof Entry) {
+                return this.id.equals(((Entry) obj).id);
+            } else return false;
         }
 
         public Stream<Block> stream() {
