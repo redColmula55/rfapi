@@ -1,0 +1,10 @@
+{
+  "type": "reservoir-api:source_conversion",
+  "ingredient": [
+    "minecraft:lava"
+  ],
+  "source": [
+    "reservoir-testmod:milk/still"
+  ],
+  "result": "minecraft:diamond_ore"
+}

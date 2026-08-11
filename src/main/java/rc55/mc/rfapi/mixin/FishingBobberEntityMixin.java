@@ -1,0 +1,32 @@
+package rc55.mc.rfapi.mixin;
+
+import net.minecraft.entity.projectile.FishingBobberEntity;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.registry.tag.TagKey;
+import net.minecraft.util.math.BlockPos;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import rc55.mc.rfapi.RFApiConfigs;
+import rc55.mc.rfapi.fluid.FluidTags;
+
+@Mixin(FishingBobberEntity.class)
+public abstract class FishingBobberEntityMixin {
+    // Only catch fish in fluids with #c:has_fishes
+    @Redirect(
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/fluid/FluidState;isIn(Lnet/minecraft/registry/tag/TagKey;)Z"), method = "tick"
+    )
+    public boolean rfapi$modifyBobberTickingPredicate(FluidState instance, TagKey<Fluid> tag) {
+        return instance.isIn(FluidTags.HAS_FISHES);
+    }
+
+    @Inject(at = @At("HEAD"), method = "isOpenOrWaterAround", cancellable = true)
+    public void rfapi$modifyOpenWaterCheck(BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
+        if (RFApiConfigs.getInstance().disableOpenWaterCheck) {
+            cir.setReturnValue(true);
+        }
+    }
+}

@@ -1,5 +1,5 @@
 {
-  "type": "fluidlib:infection",
+  "type": "reservoir-api:infection",
   "source": "minecraft:water",
   "target": [],
   "chance": 0.5

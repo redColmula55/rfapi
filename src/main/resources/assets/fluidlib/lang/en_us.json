@@ -1,7 +1,0 @@
-{
-  "modmenu.nameTranslation.fluidlib": "Fluid Lib",
-  "modmenu.descriptionTranslation.fluidlib": "Fluid Lib is a simple lib mod which tends to make creating/operating fluids in Fabric easier.",
-
-  "tooltip.fluidlib.bucket.temperature": "Temperature: %sK (%s℃)",
-  "tooltip.fluidlib.bucket.max_temperature": "Max Temperature: %sK (%s℃)"
-}

@@ -1,0 +1,7 @@
+{
+  "type": "reservoir-api:infection",
+  "source": "reservoir-testmod:milk/still",
+  "target": [
+    "#minecraft:water"
+  ]
+}

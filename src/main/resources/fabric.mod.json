@@ -1,38 +1,38 @@
 {
 	"schemaVersion": 1,
-	"id": "fluidlib",
+	"id": "reservoir-api",
 	"version": "${mod_version}+${minecraft_version}",
-	"name": "Fluid Lib",
-	"description": "Fluid Lib is a lib mod intends to make creating fluids in Fabric easier.",
+	"name": "Reservoir Fluid API",
+	"description": "This is a lib mod trying to make creating fluids in Fabric easier.",
 	"authors": [
 		"redColmula55"
 	],
 	"contact": {
-		"homepage": "https://github.com/redColmula55/fluid-lib",
-		"sources": "https://github.com/redColmula55/fluid-lib",
-		"issues": "https://github.com/redColmula55/fluid-lib/issues"
+		"homepage": "https://github.com/redColmula55/rfapi",
+		"sources": "https://github.com/redColmula55/rfapi",
+		"issues": "https://github.com/redColmula55/rfapi/issues"
 	},
 	"license": "LGPL-2.1 or later",
-	"icon": "assets/fluidlib/icon.png",
+	"icon": "assets/reservoir-api/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"rc55.mc.fluidlib.FluidLib"
+          "rc55.mc.rfapi.RFApiMain"
 		],
 		"client": [
-			"rc55.mc.fluidlib.FluidLibClient"
+          "rc55.mc.rfapi.RFApiClient"
 		],
 		"fabric-datagen": [
-            "rc55.mc.fluidlib.FluidLibDataGenerator"
+          "rc55.mc.rfapi.RFApiDataGenerator"
 		],
         "modmenu": [
-            "rc55.mc.fluidlib.FluidLibModMenuImpl"
+          "rc55.mc.rfapi.RFApiModMenuImpl"
         ]
 	},
 	"mixins": [
-		"fluidlib.mixins.json"
+		"reservoir-api.mixins.json"
 	],
-	"accessWidener": "fluidlib.accesswidener",
+	"accessWidener": "reservoir-api.accesswidener",
 	"depends": {
 		"fabricloader": ">=0.15.0",
 		"minecraft": "~${minecraft_version}",
@@ -42,7 +42,8 @@
 	},
 	"custom": {
 		"loom:injected_interfaces": {
-          "net/minecraft/class_3611": ["rc55/mc/fluidlib/fluid/IFluidWithSettings"]
+          "net/minecraft/class_3611": ["rc55/mc/rfapi/fluid/IFluidWithSettings"],
+          "net/minecraft/class_1297": ["rc55/mc/rfapi/entity/IFluidCollidable"]
 		},
         "modmenu": {
             "badges": ["library"]

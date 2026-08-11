@@ -139,5 +139,5 @@ test {
 }
 
 loom {
-    accessWidenerPath = file("src/main/resources/fluidlib.accesswidener")
+    accessWidenerPath = file("src/main/resources/reservoir-api.accesswidener")
 }

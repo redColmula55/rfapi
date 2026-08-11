@@ -1,28 +1,29 @@
 {
 	"schemaVersion": 1,
-	"id": "fluidlib-testmod",
+	"id": "reservoir-testmod",
 	"version": "1.0",
-	"name": "Fluid Lib Test Mod",
-	"description": "Test mod for Fluid Lib",
+	"name": "Reservoir Fluid API Test Mod",
+	"description": "Test mod for Reservoir Fluid API",
 	"authors": [
 		"redColmula55"
 	],
 	"contact": {
-		"homepage": "https://github.com/redColmula55/fluid-lib",
-		"sources": "https://github.com/redColmula55/fluid-lib",
-		"issues": "https://github.com/redColmula55/fluid-lib/issues"
+		"homepage": "https://github.com/redColmula55/rfapi",
+		"sources": "https://github.com/redColmula55/rfapi",
+		"issues": "https://github.com/redColmula55/rfapi/issues"
 	},
 	"license": "LGPL-2.1 or later",
-	"icon": "assets/fluidlib-testmod/icon.png",
+	"icon": "assets/reservoir-testmod/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"rc55.mc.testmod.fluidlib.TestModMain"
+			"rc55.mc.testmod.rfapi.TestModMain"
 		],
 		"client": [
-			"rc55.mc.testmod.fluidlib.TestModClient"
+			"rc55.mc.testmod.rfapi.TestModClient"
 		],
 		"fabric-datagen": [
+            "rc55.mc.testmod.rfapi.TestModDataGen"
 		]
 	},
 	"depends": {
@@ -30,6 +31,6 @@
 		"minecraft": "~${minecraft_version}",
 		"java": ">=${java_version}",
 		"fabric-api": "*",
-        "fluidlib": "*"
+        "reservoir-api": "*"
 	}
 }

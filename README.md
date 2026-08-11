@@ -1,10 +1,13 @@
-<h1>FluidLib</h1>
+<h1>Reservoir Fluid API</h1>
 
 English | [简体中文](README-zh.md)
 
 <h3>Description</h3>
 
 This is a lib mod intends to make creating fluids in Fabric easier.
+
+* Mod ID: reservoir-api
+* Old name: Fluid Lib
 
 * Note: This mod is still in beta and maybe unstable and buggy. Use under your own risk.
 

@@ -1,0 +1,17 @@
+{
+  "modmenu.nameTranslation.reservoir-api": "水库",
+  "modmenu.descriptionTranslation.reservoir-api": "这是一个可以让开发者们在 Fabric 上更轻松的创建/操作流体的mod.",
+
+  "tooltip.reservoir-api.bucket.temperature": "温度: %sK (%s℃)",
+  "tooltip.reservoir-api.bucket.max_temperature": "最大温度: %sK (%s℃)",
+  "tooltip.reservoir-api.bucket.unlimited_max_temperature": "最大温度：无限制",
+
+  "item.minecraft.bucket.filled": "%s 桶",
+
+  "text.autoconfig.reservoir-api.title": "水库API 配置",
+  "text.autoconfig.reservoir-api.option.fluidUpdates": "流体计划刻",
+  "text.autoconfig.reservoir-api.option.blockVanillaFluidReactions": "禁用原版流体反应",
+  "text.autoconfig.reservoir-api.option.disableOpenWaterCheck": "禁用钓鱼开放水域检查",
+  "text.autoconfig.reservoir-api.option.clearLavaFog": "清晰岩浆迷雾",
+  "text.autoconfig.reservoir-api.option.clearSnowFog": "清晰细雪迷雾"
+}

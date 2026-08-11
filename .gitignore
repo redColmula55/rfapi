@@ -45,3 +45,4 @@ replay_*.log
 /testmod/.gradle/
 /testmod/build/
 /testmod/run/
+/testmod/src/main/generated/.cache/

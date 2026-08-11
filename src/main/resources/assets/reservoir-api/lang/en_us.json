@@ -1,0 +1,17 @@
+{
+  "modmenu.nameTranslation.reservoir-api": "Reservoir Fluid API",
+  "modmenu.descriptionTranslation.reservoir-api": "This is a simple lib mod which tends to make creating/operating fluids in Fabric easier.",
+
+  "tooltip.reservoir-api.bucket.temperature": "Temperature: %sK (%s℃)",
+  "tooltip.reservoir-api.bucket.max_temperature": "Max Temperature: %sK (%s℃)",
+  "tooltip.reservoir-api.bucket.unlimited_max_temperature": "Max Temperature: Unlimited",
+
+  "item.minecraft.bucket.filled": "%s Bucket",
+
+  "text.autoconfig.reservoir-api.title": "Reservoir Fluid API Configs",
+  "text.autoconfig.reservoir-api.option.fluidUpdates": "Fluid Scheduled Ticks",
+  "text.autoconfig.reservoir-api.option.blockVanillaFluidReactions": "Disable Vanilla fluid reaction",
+  "text.autoconfig.reservoir-api.option.disableOpenWaterCheck": "Disable fishing open water check",
+  "text.autoconfig.reservoir-api.option.clearLavaFog": "Clearer fog in Lava",
+  "text.autoconfig.reservoir-api.option.clearSnowFog": "Clearer fog in Powder Snow"
+}

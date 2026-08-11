@@ -1,5 +1,5 @@
 {
-  "type": "fluidlib:source_conversion",
+  "type": "reservoir-api:source_conversion",
   "source": [
     "#minecraft:lava"
   ],
