@@ -3,7 +3,7 @@
 	"id": "reservoir-api",
 	"version": "${mod_version}+${minecraft_version}",
 	"name": "Reservoir Fluid API",
-	"description": "This is a lib mod trying to make creating fluids in Fabric easier.",
+	"description": "This is a lib mod which makes creating fluids in Fabric easier.",
 	"authors": [
 		"redColmula55"
 	],

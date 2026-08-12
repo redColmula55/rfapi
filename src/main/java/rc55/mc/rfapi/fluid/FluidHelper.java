@@ -15,6 +15,8 @@ import net.minecraft.world.*;
 import org.jetbrains.annotations.ApiStatus;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import rc55.mc.rfapi.RFApiConfigs;
+import rc55.mc.rfapi.event.FluidReplacementEvent;
+import rc55.mc.rfapi.event.FluidScheduledTickEvent;
 import rc55.mc.rfapi.fluid.reaction.FluidReactionType;
 import rc55.mc.rfapi.fluid.reaction.IFluidReaction;
 import rc55.mc.rfapi.mixin.FlowableFluidAccessor;
@@ -41,6 +43,12 @@ public class FluidHelper {
      */
     @ApiStatus.Internal
     public static boolean canBeReplacedWith(Fluid self, FluidState state, BlockView world, BlockPos pos, Fluid fluid, Direction direction) {
+        // Set the result on event
+        switch (FluidReplacementEvent.EVENT.invoker().onFluidReplacement(self, state, world, pos, fluid, direction)) {
+            case TRUE: return true;
+            case FALSE: return false;
+        }
+
         if (state.isEmpty()) return true;
         if (self.matchesType(fluid)) return false;
         if (world instanceof WorldAccess) {
@@ -131,6 +139,13 @@ public class FluidHelper {
             return;
         }
 
+        // Cancel further actions on event
+        if (FluidScheduledTickEvent.EVENT.invoker().onScheduledTick(
+                self, world, pos, state, levelDecreasePerBlock, ((FlowableFluidAccessor)self).invoke_getNextTickDelay(world, pos, state, state))
+        ) {
+            return;
+        }
+
         boolean infection = false;
         for (Direction direction : Direction.values()) {
             final BlockPos targetPos = pos.offset(direction);
@@ -196,19 +211,5 @@ public class FluidHelper {
             return ((FlowableFluid) fluid).getStill();
         }
         return fluid;
-    }
-
-    public static <T> T[] shuffle(T[] arr) {
-        Random random = new Random();
-        for (int i = 0; i < arr.length; i++) {
-            swap(arr, random.nextInt(arr.length), random.nextInt(arr.length));
-        }
-        return arr;
-    }
-
-    private static <T> void swap(T[] arr, int a, int b) {
-        T tmp = arr[a];
-        arr[a] = arr[b];
-        arr[b] = tmp;
     }
 }

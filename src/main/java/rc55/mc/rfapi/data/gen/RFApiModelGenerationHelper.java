@@ -1,6 +1,5 @@
 package rc55.mc.rfapi.data.gen;
 
-import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.data.client.*;
 import net.minecraft.item.BucketItem;
@@ -31,24 +30,34 @@ public final class RFApiModelGenerationHelper {
         }
     }
 
-    public static void createCustomBucketItemModel(ItemModelGenerator generator, Identifier baseTexture, Identifier overlayTexture, BucketItem item) {
-        Models.GENERATED_TWO_LAYERS.upload(
-                ModelIds.getItemModelId(item.asItem()),
-                TextureMap.layered(baseTexture, overlayTexture),
-                generator.writer
-        );
+    public static void createCustomBucketItemModel(ItemModelGenerator generator, Identifier baseTexture, Identifier overlayTexture, BucketItem... items) {
+        for (BucketItem item : items) {
+            Models.GENERATED_TWO_LAYERS.upload(
+                    ModelIds.getItemModelId(item),
+                    TextureMap.layered(baseTexture, overlayTexture),
+                    generator.writer
+            );
+        }
     }
 
     public static void createFluidBlockModel(BlockStateModelGenerator generator, FluidReference<?>... fluids) {
-        createFluidBlockModel(generator, Arrays.stream(fluids).map(fluid -> (FluidBlock) fluid.getBlock()).toArray(FluidBlock[]::new));
+        createFluidBlockModel(generator, new Identifier("block/water_still"), fluids);
+    }
+
+    public static void createFluidBlockModel(BlockStateModelGenerator generator, Identifier particleId, FluidReference<?>... fluids) {
+        createFluidBlockModel(generator, particleId, Arrays.stream(fluids).map(fluid -> (FluidBlock) fluid.getBlock()).toArray(FluidBlock[]::new));
     }
 
     public static void createFluidBlockModel(BlockStateModelGenerator generator, FluidBlock... blocks) {
+        createFluidBlockModel(generator, new Identifier("block/water_still"), blocks);
+    }
+
+    public static void createFluidBlockModel(BlockStateModelGenerator generator, Identifier particleId, FluidBlock... blocks) {
         for (FluidBlock block : blocks) {
             generator.registerSimpleState(block);
             FLUID_BLOCK_MODEL.upload(
                     ModelIds.getBlockModelId(block),
-                    TextureMap.particle(Blocks.WATER),
+                    TextureMap.particle(particleId),
                     generator.modelCollector
             );
         }

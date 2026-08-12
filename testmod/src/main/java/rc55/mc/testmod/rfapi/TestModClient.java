@@ -22,9 +22,13 @@ public class TestModClient implements ClientModInitializer {
             
             entries.add(TestModItems.CERAMIC_BUCKET);
             entries.add(TestModItems.CERAMIC_WATER_BUCKET);
+            TestModItems.CERAMIC_DYE_BUCKETS.values().forEach(entries::add);
             entries.add(TestModItems.WOODEN_BUCKET);
             entries.add(TestModItems.WOODEN_WATER_BUCKET);
             entries.add(TestModItems.WOODEN_MILK_BUCKET);
         });
+
+        // Water has no item color by default, so we must register them manually
+        FluidRenderRegistry.registerCustomColorProvider(0x0080FF, TestModItems.CERAMIC_WATER_BUCKET, TestModItems.WOODEN_WATER_BUCKET);
     }
 }

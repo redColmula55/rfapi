@@ -1,6 +1,6 @@
 {
   "modmenu.nameTranslation.reservoir-api": "Reservoir Fluid API",
-  "modmenu.descriptionTranslation.reservoir-api": "This is a simple lib mod which tends to make creating/operating fluids in Fabric easier.",
+  "modmenu.descriptionTranslation.reservoir-api": "This is a simple lib mod which makes creating/operating fluids in Fabric easier.",
 
   "tooltip.reservoir-api.bucket.temperature": "Temperature: %sK (%s℃)",
   "tooltip.reservoir-api.bucket.max_temperature": "Max Temperature: %sK (%s℃)",
@@ -13,5 +13,6 @@
   "text.autoconfig.reservoir-api.option.blockVanillaFluidReactions": "Disable Vanilla fluid reaction",
   "text.autoconfig.reservoir-api.option.disableOpenWaterCheck": "Disable fishing open water check",
   "text.autoconfig.reservoir-api.option.clearLavaFog": "Clearer fog in Lava",
-  "text.autoconfig.reservoir-api.option.clearSnowFog": "Clearer fog in Powder Snow"
+  "text.autoconfig.reservoir-api.option.clearSnowFog": "Clearer fog in Powder Snow",
+  "text.autoconfig.reservoir-api.option.replaceVanillaFog": "Apply custom fog(if present) even in vanilla tags"
 }

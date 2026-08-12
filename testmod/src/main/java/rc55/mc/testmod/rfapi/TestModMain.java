@@ -1,6 +1,10 @@
 package rc55.mc.testmod.rfapi;
 
 import net.fabricmc.api.ModInitializer;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import rc55.mc.rfapi.event.EntityTouchFluidEvent;
 import rc55.mc.testmod.rfapi.fluid.TestModFluids;
 import rc55.mc.testmod.rfapi.item.TestModItems;
 
@@ -16,6 +20,15 @@ public class TestModMain implements ModInitializer {
     public void onInitialize() {
         TestModItems.init();
         TestModFluids.init();
+
+        EntityTouchFluidEvent.EVENT.register((state, world, pos, entity) -> {
+            if (state.isOf(TestModFluids.STEAM.getBlock())) {
+                if (entity instanceof LivingEntity living) {
+                    living.addStatusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST));
+                }
+            }
+            return false;
+        });
     }
 
     public static <E extends Enum<E>, V> Map<E, V> mapOf(Class<E> clazz, Function<E, V> valueMapper) {

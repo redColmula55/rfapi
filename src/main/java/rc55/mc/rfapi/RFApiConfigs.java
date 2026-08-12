@@ -30,4 +30,7 @@ public class RFApiConfigs implements ConfigData {
 
     @Environment(EnvType.CLIENT)
     public boolean clearSnowFog = false;
+
+    @Environment(EnvType.CLIENT)
+    public boolean replaceVanillaFog = true;
 }

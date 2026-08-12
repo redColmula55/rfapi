@@ -7,6 +7,7 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.CameraSubmersionType;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import org.jetbrains.annotations.Nullable;
@@ -18,6 +19,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import rc55.mc.rfapi.RFApiConfigs;
+import rc55.mc.rfapi.client.FluidFogEvents;
 import rc55.mc.rfapi.fluid.FluidSettings;
 
 @Mixin(BackgroundRenderer.class)
@@ -33,11 +35,21 @@ public abstract class BackgroundRendererMixin {
             method = "render"
     )
     private static void rfapi$modifyFluidFogColor(Camera camera, float tickDelta, ClientWorld world, int viewDistance, float skyDarkness, CallbackInfo ci) {
+        if (camera.getSubmersionType() != CameraSubmersionType.NONE && !RFApiConfigs.getInstance().replaceVanillaFog) return;
         FluidState state = world.getFluidState(camera.getBlockPos());
-        if (camera.getSubmersionType() == CameraSubmersionType.NONE && !state.isEmpty()) {
+        if (!state.isEmpty()) {
             FluidSettings.ColorSettings settings = getCustomColor(world, camera.getBlockPos());
-            if (settings != null && settings.shouldRenderFog()) {
+            // Vanilla water fog color depends on biome, so here we exclude it so vanilla logic can perform
+            if (!state.isOf(Fluids.WATER) && settings != null && settings.shouldRenderFog()) {
                 final int color = settings.fogColor();
+                red = ((color >> 16) & 0xFF) / 255f;
+                green = ((color >> 8) & 0xFF) / 255f;
+                blue = (color & 0xFF) / 255f;
+            }
+            final int color = FluidFogEvents.COLOR.invoker().getFogColor(
+                    camera, tickDelta, world, camera.getBlockPos(), state, viewDistance, skyDarkness
+            );
+            if (color != -1) {
                 red = ((color >> 16) & 0xFF) / 255f;
                 green = ((color >> 8) & 0xFF) / 255f;
                 blue = (color & 0xFF) / 255f;
@@ -76,6 +88,10 @@ public abstract class BackgroundRendererMixin {
             RenderSystem.setShaderFogStart(-8f);
             RenderSystem.setShaderFogEnd(viewDistance * 0.1f);
         }
+        FluidFogEvents.DISTANCE.invoker().modifyFogDistance(
+                camera, fogType, viewDistance, thickFog, tickDelta,
+                RenderSystem::setShaderFogStart, RenderSystem::setShaderFogEnd, RenderSystem::setShaderFogShape
+        );
     }
 
     @Unique

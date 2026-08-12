@@ -264,10 +264,10 @@ public abstract class FluidRendererMixin {
 
                 quad.setSprite(sprites[0]);
                 if (flowsUp) {
-                    setVertex(quad, 0, 1.0F, 1 - yOffset, 0.0F, minU, maxV);
-                    setVertex(quad, 1, 1.0F, 1 - yOffset, 1.0F, minU, minV);
-                    setVertex(quad, 2, 0.0F, 1 - yOffset, 1.0F, maxU, minV);
-                    setVertex(quad, 3, 0.0F, 1 - yOffset, 0.0F, maxU, maxV);
+                    setVertex(quad, 3, 1.0F, 1 - yOffset, 0.0F, minU, maxV);
+                    setVertex(quad, 2, 1.0F, 1 - yOffset, 1.0F, minU, minV);
+                    setVertex(quad, 1, 0.0F, 1 - yOffset, 1.0F, maxU, minV);
+                    setVertex(quad, 0, 0.0F, 1 - yOffset, 0.0F, maxU, maxV);
                 } else {
                     setVertex(quad, 0, 0.0F, yOffset, 1.0F, minU, maxV);
                     setVertex(quad, 1, 0.0F, yOffset, 0.0F, minU, minV);
@@ -345,14 +345,14 @@ public abstract class FluidRendererMixin {
                     quad.setSprite(sprite);
 
                     if (flowsUp) {
-                        setVertex(quad, 0, x2, Math.abs(1 - height2), z2, u2, v2);
-                        setVertex(quad, 1, x2, Math.abs(1 - yOffset), z2, u2, v3);
-                        setVertex(quad, 2, x1, Math.abs(1 - yOffset), z1, u1, v3);
-                        setVertex(quad, 3, x1, Math.abs(1 - height1), z1, u1, v1);
-//                        setVertex(quad, 0, x2, 1 - yOffset, z2, u2, v3);
-//                        setVertex(quad, 1, x1, 1 - yOffset, z1, u1, v3);
-//                        setVertex(quad, 2, x1, 1 - height1, z1, u1, v1);
-//                        setVertex(quad, 3, x2, 1 - height2, z2, u2, v2);
+//                        setVertex(quad, 0, x2, Math.abs(1 - height2), z2, u2, v2);
+//                        setVertex(quad, 1, x2, Math.abs(1 - yOffset), z2, u2, v3);
+//                        setVertex(quad, 2, x1, Math.abs(1 - yOffset), z1, u1, v3);
+//                        setVertex(quad, 3, x1, Math.abs(1 - height1), z1, u1, v1);
+                        setVertex(quad, 0, x2, 1 - yOffset, z2, u2, v3);
+                        setVertex(quad, 1, x1, 1 - yOffset, z1, u1, v3);
+                        setVertex(quad, 2, x1, 1 - height1, z1, u1, v1);
+                        setVertex(quad, 3, x2, 1 - height2, z2, u2, v2);
                     } else {
                         setVertex(quad, 0, x2, height2, z2, u2, v2);
                         setVertex(quad, 1, x2, yOffset, z2, u2, v3);

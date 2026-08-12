@@ -62,7 +62,7 @@ public record FluidReactionType<T extends IFluidReaction<?>>(Codec<T> codec) {
 
     @ApiStatus.Internal
     public static void init() {
-        RFApiMain.LOGGER.info("Loaded {} reaction types.", REGISTRY.getKeys().size());
+        RFApiMain.LOGGER.info("Loaded {} internal reaction types.", REGISTRY.getKeys().size());
         IFluidReaction.initDataListener();
     }
 }

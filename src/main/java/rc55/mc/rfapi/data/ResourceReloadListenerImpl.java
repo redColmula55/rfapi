@@ -101,6 +101,6 @@ public class ResourceReloadListenerImpl<T> implements SimpleSynchronousResourceR
             }
         }
         this.resourceMap.reload(resources);
-        RFApiMain.LOGGER.info("Loaded {} fluid reactions from enabled data packs", resources.size());
+        RFApiMain.LOGGER.info("Loaded {}x {} from enabled data packs.", resources.size(), this.getFabricId());
     }
 }

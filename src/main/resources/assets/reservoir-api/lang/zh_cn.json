@@ -13,5 +13,6 @@
   "text.autoconfig.reservoir-api.option.blockVanillaFluidReactions": "禁用原版流体反应",
   "text.autoconfig.reservoir-api.option.disableOpenWaterCheck": "禁用钓鱼开放水域检查",
   "text.autoconfig.reservoir-api.option.clearLavaFog": "清晰岩浆迷雾",
-  "text.autoconfig.reservoir-api.option.clearSnowFog": "清晰细雪迷雾"
+  "text.autoconfig.reservoir-api.option.clearSnowFog": "清晰细雪迷雾",
+  "text.autoconfig.reservoir-api.option.replaceVanillaFog": "对原版标签应用自定义迷雾（若有）"
 }

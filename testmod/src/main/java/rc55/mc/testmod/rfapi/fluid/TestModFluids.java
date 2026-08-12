@@ -18,7 +18,7 @@ public class TestModFluids {
     public static final FluidReference<ExtendedFluid> MILK = FluidRegistry.registerSimple(
             Identifier.of(MODID, "milk"),
             FluidSettings.lavaLike()
-                    .color(FluidSettings.ColorSettings.ofFixedColor(0xE5E5E5, MapColor.OFF_WHITE, FluidSettings.ColorSettings.FogType.WATER))
+                    .color(FluidSettings.ColorSettings.ofFixedColor(0xE5E5E5, MapColor.OFF_WHITE, FluidSettings.ColorSettings.FogType.LAVA))
                     .temperature(350)
                     .setsFire(false)
                     .luminance(0)
@@ -28,7 +28,7 @@ public class TestModFluids {
 
     public static final FluidReference<ExtendedFluid> STEAM = FluidRegistry.registerSimple(
             Identifier.of(MODID, "steam"),
-            FluidSettings.waterLike().temperature(400).bucket(() -> TestModItems.STEAM_BUCKET).flowsUp()
+            FluidSettings.waterLike().temperature(450).bucket(() -> TestModItems.STEAM_BUCKET).flowsUp()
     );
 
     public static final Map<DyeColor, FluidReference<ExtendedFluid>> DYE_FLUIDS = TestModMain.mapOf(DyeColor.class, color -> FluidRegistry.registerSimple(

@@ -41,6 +41,10 @@ replay_*.log
 *.hprof
 *.jfr
 
+# JUnit Test
+/logs
+/config
+
 # TestMod
 /testmod/.gradle/
 /testmod/build/

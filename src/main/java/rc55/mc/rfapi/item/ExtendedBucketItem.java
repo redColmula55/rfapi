@@ -30,10 +30,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import rc55.mc.rfapi.fluid.FluidHelper;
-import rc55.mc.rfapi.fluid.FluidTags;
-import rc55.mc.rfapi.fluid.FluidReference;
-import rc55.mc.rfapi.fluid.FluidSettings;
+import rc55.mc.rfapi.fluid.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -81,7 +78,7 @@ public class ExtendedBucketItem extends BucketItem {
         super(FluidHelper.trim(fluid), settings.recipeRemainder(base));
         if (base instanceof ExtendedBucketItem bucket && fluid.getSettings().getTemperature() > bucket.maxTemperature) {
             throw new IllegalArgumentException("Given fluid %s has temperature %d greater than its base item(max temperature %d)!"
-                    .formatted(fluid, fluid.getSettings().getTemperature(), bucket.maxTemperature));
+                    .formatted(FluidRegistry.getId(fluid), fluid.getSettings().getTemperature(), bucket.maxTemperature));
         }
         this.maxTemperature = Integer.MAX_VALUE;
         this.baseItem = base;

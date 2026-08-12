@@ -78,6 +78,7 @@ public abstract class EntityMixin implements IFluidCollidable {
         }
         if (this.isTouchingFluid(fluid -> fluid.getSettings().canSetFire())) {
             self.setOnFireFromLava();
+            self.setOnFire(self.getFireTicks() > 0);
         }
     }
 

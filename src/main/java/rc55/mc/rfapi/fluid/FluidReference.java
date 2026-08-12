@@ -1,5 +1,7 @@
 package rc55.mc.rfapi.fluid;
 
+import com.google.common.collect.Interner;
+import com.google.common.collect.Interners;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.piston.PistonBehavior;
@@ -18,6 +20,7 @@ import java.util.function.Function;
  * @param <T> Class type of the fluid
  */
 public class FluidReference<T extends FlowableFluid> {
+    private static final Interner<FluidReference<?>> INTERNER = Interners.newWeakInterner();
 
     private final Identifier stillId, flowId, blockId;
     private T still, flowing;
@@ -31,12 +34,9 @@ public class FluidReference<T extends FlowableFluid> {
         this.settings = settingsProvider.apply(this).block(this::getBlock).build();
     }
 
-    /**
-     * Create a reference for an existing fluid
-     * @param fluid Fluid instance, can be either still or flow
-     */
+    @ApiStatus.Internal
     @SuppressWarnings("unchecked")
-    public FluidReference(@NotNull T fluid) {
+    protected FluidReference(@NotNull T fluid) {
         this.still = (T) fluid.getStill();
         this.stillId = FluidRegistry.getId(this.still);
         this.flowing = (T) fluid.getFlowing();
@@ -47,19 +47,29 @@ public class FluidReference<T extends FlowableFluid> {
     }
 
     /**
+     * Create a reference for an existing fluid
+     * @param fluid Fluid instance, can be either still or flow
+     */
+    @SuppressWarnings("unchecked")
+    public static <T extends FlowableFluid> FluidReference<T> of(T fluid) {
+        return (FluidReference<T>) INTERNER.intern(new FluidReference<>(fluid));
+    }
+
+    /**
      * Reference for {@linkplain Fluids#WATER vanilla water}
      */
-    public static final FluidReference<WaterFluid> VANILLA_WATER = new FluidReference<>((WaterFluid) Fluids.WATER);
+    public static final FluidReference<WaterFluid> VANILLA_WATER = of((WaterFluid) Fluids.WATER);
 
     /**
      * Reference for {@linkplain Fluids#LAVA vanilla lava}
      */
-    public static final FluidReference<LavaFluid> VANILLA_LAVA = new FluidReference<>((LavaFluid) Fluids.LAVA);
+    public static final FluidReference<LavaFluid> VANILLA_LAVA = of((LavaFluid) Fluids.LAVA);
 
     void onRegister(T still, T flowing, Block block) {
         this.still = still;
         this.flowing = flowing;
         this.block = block;
+        INTERNER.intern(this);
     }
 
     @SuppressWarnings("unchecked")
