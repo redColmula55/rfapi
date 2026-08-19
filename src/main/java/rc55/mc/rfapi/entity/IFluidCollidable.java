@@ -12,5 +12,7 @@ import java.util.function.Predicate;
 @ApiStatus.NonExtendable
 @ApiStatus.Internal
 public interface IFluidCollidable {
-    boolean isTouchingFluid(Predicate<Fluid> predicate);
+    default boolean isTouchingFluid(Predicate<Fluid> predicate) {
+        return false;
+    }
 }

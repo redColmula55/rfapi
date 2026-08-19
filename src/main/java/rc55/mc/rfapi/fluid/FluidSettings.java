@@ -10,9 +10,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.MapColor;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
+import net.minecraft.fluid.*;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleEffect;
@@ -96,15 +94,15 @@ public class FluidSettings implements FluidVariantAttributeHandler {
         final Fluid fluid = fluidVariant.getFluid();
         final FluidVariantAttributeHandler fabricAttribute = FluidVariantAttributes.getHandler(fluid);
         final Builder builder;
-        if (fluid.isIn(FluidTags.WATER)) {
+        if (fluid.isIn(FluidTags.WATER) || fluid instanceof WaterFluid) {
             builder = waterLike();
-        } else if (fluid.isIn(FluidTags.LAVA)) {
+        } else if (fluid.isIn(FluidTags.LAVA) || fluid instanceof LavaFluid) {
             builder = lavaLike();
         } else {
             builder = builder();
         }
         if (fabricAttribute == null) {
-            RFApiMain.LOGGER.error("Fluid {} has neither fabric/fluidlib settings(aka property) defined!", FluidRegistry.getId(fluid));
+            RFApiMain.LOGGER.error("Fluid {} has neither fabric/rfapi settings(aka property) defined!", FluidRegistry.getId(fluid));
             return builder.bucket(fluid::getBucketItem)
                     .block(() -> fluid.getDefaultState().getBlockState().getBlock())
                     .build();

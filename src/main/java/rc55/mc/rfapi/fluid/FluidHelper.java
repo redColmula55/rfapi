@@ -3,6 +3,7 @@ package rc55.mc.rfapi.fluid;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.FluidBlock;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.Fluid;
@@ -12,6 +13,7 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.*;
+import net.minecraft.world.biome.Biome;
 import org.jetbrains.annotations.ApiStatus;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import rc55.mc.rfapi.RFApiConfigs;
@@ -21,7 +23,7 @@ import rc55.mc.rfapi.fluid.reaction.FluidReactionType;
 import rc55.mc.rfapi.fluid.reaction.IFluidReaction;
 import rc55.mc.rfapi.mixin.FlowableFluidAccessor;
 
-import java.util.Random;
+import java.util.function.Predicate;
 
 /**
  * This holds some methods used for triggering fluid reactions
@@ -122,7 +124,7 @@ public class FluidHelper {
     }
 
     /**
-     * Called when the fluid receives
+     * Called when the fluid receives a scheduled tick
      * This handles {@link FluidReactionType#INFECTION} logics so it needs to be hooked to vanilla fluids
      * Here we extract it into a static method so we can perform the hook with {@linkplain rc55.mc.rfapi.mixin.FlowableFluidMixin#onScheduledTick(World, BlockPos, FluidState) mixins}
      * @param self The fluid instance which tries to call this method
@@ -211,5 +213,26 @@ public class FluidHelper {
             return ((FlowableFluid) fluid).getStill();
         }
         return fluid;
+    }
+
+    public static boolean canSetIce(WorldView world, BlockPos pos, Predicate<Fluid> predicate, boolean doWaterCheck) {
+        Biome biome = world.getBiome(pos).value();
+        if (!biome.doesNotSnow(pos)) {
+            if (pos.getY() >= world.getBottomY() && pos.getY() < world.getTopY() && world.getLightLevel(LightType.BLOCK, pos) < 10) {
+                BlockState blockState = world.getBlockState(pos);
+                if (blockState.getBlock() instanceof FluidBlock && predicate.test(blockState.getFluidState().getFluid())) {
+                    if (!doWaterCheck) {
+                        return true;
+                    }
+
+                    for (final Direction direction : Direction.Type.HORIZONTAL) {
+                        if (!predicate.test(world.getFluidState(pos.offset(direction)).getFluid())) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 }

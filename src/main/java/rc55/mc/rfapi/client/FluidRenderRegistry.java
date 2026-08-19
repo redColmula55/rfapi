@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandler;
 import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
+import net.minecraft.block.Block;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
@@ -77,6 +78,18 @@ public class FluidRenderRegistry {
      */
     public static void registerCustomColorProvider(int color, ItemConvertible... items) {
         ColorProviderRegistry.ITEM.register((stack, tintIndex) -> tintIndex == 1 ? color : 0xFFFFFF, items);
+    }
+
+    /**
+     * Marks given blocks as "transparent", which typically
+     * means fluids with overlay textures will use their overlay
+     * texture behind them
+     * @see FluidRenderHandlerRegistry#setBlockTransparency(Block, boolean)
+     */
+    public static void registerTransparentBlock(Block... blocks) {
+        for (final Block block : blocks) {
+            FluidRenderHandlerRegistry.INSTANCE.setBlockTransparency(block, true);
+        }
     }
 
     // For Sodium compat

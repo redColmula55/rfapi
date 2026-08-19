@@ -10,6 +10,7 @@ import net.minecraft.util.Identifier;
 import rc55.mc.rfapi.data.gen.RFApiModelGenerationHelper;
 import rc55.mc.rfapi.fluid.FluidReference;
 import rc55.mc.testmod.rfapi.TestModMain;
+import rc55.mc.testmod.rfapi.block.TestModBlocks;
 import rc55.mc.testmod.rfapi.fluid.TestModFluids;
 import rc55.mc.testmod.rfapi.item.TestModItems;
 
@@ -22,6 +23,8 @@ public class TestModModelDataGen extends FabricModelProvider {
     public void generateBlockStateModels(BlockStateModelGenerator generator) {
         RFApiModelGenerationHelper.createFluidBlockModel(generator, TestModFluids.DYE_FLUIDS.values().toArray(FluidReference[]::new));
         RFApiModelGenerationHelper.createFluidBlockModel(generator, TestModFluids.MILK, TestModFluids.STEAM);
+
+        generator.registerSimpleCubeAll(TestModBlocks.MILK_ICE);
     }
 
     @Override

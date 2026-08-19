@@ -65,26 +65,16 @@ public abstract class BackgroundRendererMixin {
             method = "applyFog"
     )
     private static CameraSubmersionType rfapi$modifyFluidFogRenderDistance(Camera instance) {
-        if (MinecraftClient.getInstance().world != null) {
-            FluidSettings.ColorSettings settings = getCustomColor(MinecraftClient.getInstance().world, instance.getBlockPos());
-            if (settings != null && settings.shouldRenderFog()) {
-                return switch (settings.fogType()) {
-                    case WATER -> CameraSubmersionType.WATER;
-                    case LAVA -> CameraSubmersionType.LAVA;
-                    case SNOW -> CameraSubmersionType.POWDER_SNOW;
-                    default -> instance.getSubmersionType();
-                };
-            }
-        }
-        return instance.getSubmersionType();
+        return getFogRenderType(MinecraftClient.getInstance().world, instance);
     }
 
     @Inject(at = @At("TAIL"), method = "applyFog")
     private static void rfapi$clearFogOnConfig(Camera camera, BackgroundRenderer.FogType fogType, float viewDistance, boolean thickFog, float tickDelta, CallbackInfo ci) {
-        if (camera.getSubmersionType() == CameraSubmersionType.LAVA && RFApiConfigs.getInstance().clearLavaFog) {
+        CameraSubmersionType type = getFogRenderType(MinecraftClient.getInstance().world, camera);
+        if (type == CameraSubmersionType.LAVA && RFApiConfigs.getInstance().clearLavaFog) {
             RenderSystem.setShaderFogStart(-8f);
             RenderSystem.setShaderFogEnd(viewDistance * 0.1f);
-        } else if (camera.getSubmersionType() == CameraSubmersionType.POWDER_SNOW && RFApiConfigs.getInstance().clearSnowFog) {
+        } else if (type == CameraSubmersionType.POWDER_SNOW && RFApiConfigs.getInstance().clearSnowFog) {
             RenderSystem.setShaderFogStart(-8f);
             RenderSystem.setShaderFogEnd(viewDistance * 0.1f);
         }
@@ -97,5 +87,21 @@ public abstract class BackgroundRendererMixin {
     @Unique
     private static @Nullable FluidSettings.ColorSettings getCustomColor(BlockView world, BlockPos pos) {
         return world.getFluidState(pos).isEmpty() ? null : world.getFluidState(pos).getFluid().getSettings().getColor();
+    }
+
+    @Unique
+    private static CameraSubmersionType getFogRenderType(@Nullable ClientWorld world, Camera camera) {
+        if (world != null) {
+            FluidSettings.ColorSettings settings = getCustomColor(world, camera.getBlockPos());
+            if (settings != null && settings.shouldRenderFog()) {
+                return switch (settings.fogType()) {
+                    case WATER -> CameraSubmersionType.WATER;
+                    case LAVA -> CameraSubmersionType.LAVA;
+                    case SNOW -> CameraSubmersionType.POWDER_SNOW;
+                    default -> camera.getSubmersionType();
+                };
+            }
+        }
+        return camera.getSubmersionType();
     }
 }

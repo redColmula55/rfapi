@@ -11,6 +11,7 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 
@@ -120,12 +121,19 @@ public class FluidReference<T extends FlowableFluid> {
         return settings;
     }
 
-    public boolean isOf(Fluid fluid) {
+    public boolean isOf(@Nullable Fluid fluid) {
         return fluid != null && (fluid == this.getStill() || fluid == this.getFlowing());
     }
 
-    public boolean isOf(FluidReference<?> fluid) {
-        return fluid.getStillId().equals(this.getStillId()) && fluid.getFlowingId().equals(this.getFlowingId());
+    public boolean isOf(@Nullable FluidReference<?> fluid) {
+        return fluid != null && fluid.getStillId().equals(this.getStillId()) && fluid.getFlowingId().equals(this.getFlowingId());
+    }
+
+    /**
+     * Checks if the given fluid is of this type and is still
+     */
+    public boolean matchesAndStill(@Nullable Fluid fluid) {
+        return fluid != null && this.isOf(fluid) && fluid == FluidHelper.trim(fluid);
     }
 
     @Override
@@ -134,7 +142,7 @@ public class FluidReference<T extends FlowableFluid> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj == null) {
             return false;
         } else if (obj instanceof FluidReference<?>) {

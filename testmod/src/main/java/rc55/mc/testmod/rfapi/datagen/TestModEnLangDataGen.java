@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
 import rc55.mc.rfapi.data.gen.RFApiLangProviderHelper;
 import rc55.mc.rfapi.item.ExtendedBucketItem;
+import rc55.mc.testmod.rfapi.block.TestModBlocks;
 import rc55.mc.testmod.rfapi.fluid.TestModFluids;
 import rc55.mc.testmod.rfapi.item.TestModItems;
 
@@ -29,5 +30,7 @@ public class TestModEnLangDataGen extends FabricLanguageProvider {
 
         RFApiLangProviderHelper.provideBucket(builder, (ExtendedBucketItem) TestModItems.CERAMIC_BUCKET, "Ceramic Bucket", "Ceramic %s Bucket");
         RFApiLangProviderHelper.provideBucket(builder, (ExtendedBucketItem) TestModItems.WOODEN_BUCKET, "Wooden Bucket", "Wooden %s Bucket");
+
+        builder.add(TestModBlocks.MILK_ICE, "Frozen Milk");
     }
 }

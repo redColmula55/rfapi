@@ -4,7 +4,9 @@ import net.fabricmc.api.ModInitializer;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import rc55.mc.rfapi.event.EndServerChunkTickEvent;
 import rc55.mc.rfapi.event.EntityTouchFluidEvent;
+import rc55.mc.testmod.rfapi.block.TestModBlocks;
 import rc55.mc.testmod.rfapi.fluid.TestModFluids;
 import rc55.mc.testmod.rfapi.item.TestModItems;
 
@@ -19,7 +21,10 @@ public class TestModMain implements ModInitializer {
     @Override
     public void onInitialize() {
         TestModItems.init();
+        TestModBlocks.init();
         TestModFluids.init();
+
+        EndServerChunkTickEvent.EVENT.register(EndServerChunkTickEvent.setIce(TestModFluids.MILK::matchesAndStill, TestModBlocks.MILK_ICE.getDefaultState()));
 
         EntityTouchFluidEvent.EVENT.register((state, world, pos, entity) -> {
             if (state.isOf(TestModFluids.STEAM.getBlock())) {
