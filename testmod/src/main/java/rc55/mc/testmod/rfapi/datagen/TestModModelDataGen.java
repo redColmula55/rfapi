@@ -25,6 +25,8 @@ public class TestModModelDataGen extends FabricModelProvider {
         RFApiModelGenerationHelper.createFluidBlockModel(generator, TestModFluids.MILK, TestModFluids.STEAM);
 
         generator.registerSimpleCubeAll(TestModBlocks.MILK_ICE);
+        generator.registerSimpleCubeAll(TestModBlocks.WET_LAVA_SPONGE);
+        generator.registerSimpleCubeAll(TestModBlocks.LAVA_SPONGE);
     }
 
     @Override

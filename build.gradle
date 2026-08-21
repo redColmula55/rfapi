@@ -59,7 +59,7 @@ allprojects {
         // Mod Menu
         modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
         // REI
-        modApi("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}") {
+        modImplementation("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}") {
             exclude(group: "net.fabricmc.fabric-api")
         }
     }
@@ -103,12 +103,6 @@ allprojects {
             }
         }
     }
-
-    fabricApi {
-        configureDataGeneration {
-            client = true
-        }
-    }
 }
 
 dependencies {
@@ -140,4 +134,11 @@ test {
 
 loom {
     accessWidenerPath = file("src/main/resources/reservoir-api.accesswidener")
+
+    fabricApi {
+        configureDataGeneration {
+            client = true
+            modId = 'reservoir-api'
+        }
+    }
 }

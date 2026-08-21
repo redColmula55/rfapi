@@ -32,5 +32,8 @@ public class TestModEnLangDataGen extends FabricLanguageProvider {
         RFApiLangProviderHelper.provideBucket(builder, (ExtendedBucketItem) TestModItems.WOODEN_BUCKET, "Wooden Bucket", "Wooden %s Bucket");
 
         builder.add(TestModBlocks.MILK_ICE, "Frozen Milk");
+
+        builder.add(TestModBlocks.LAVA_SPONGE, "Lava Sponge");
+        builder.add(TestModBlocks.WET_LAVA_SPONGE, "Wet Lava Sponge");
     }
 }

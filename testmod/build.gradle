@@ -13,6 +13,13 @@ loom {
             source sourceSets.main
         }
     }
+
+    fabricApi {
+        configureDataGeneration {
+            client = true
+            modId = 'reservoir-testmod'
+        }
+    }
 }
 
 dependencies {

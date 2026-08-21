@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "reservoir-testmod:magenta_dye/flowing",
+    "reservoir-testmod:magenta_dye/still"
+  ]
+}

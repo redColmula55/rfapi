@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "#c:buckets/filled/ceramic",
+    "#c:buckets/empty/ceramic"
+  ]
+}

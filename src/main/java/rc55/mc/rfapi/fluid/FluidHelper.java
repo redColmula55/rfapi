@@ -10,11 +10,13 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.*;
 import net.minecraft.world.biome.Biome;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import rc55.mc.rfapi.RFApiConfigs;
 import rc55.mc.rfapi.event.FluidReplacementEvent;
@@ -234,5 +236,25 @@ public class FluidHelper {
             }
         }
         return false;
+    }
+
+    public static Block getBlockForFluid(@Nullable Fluid fluid) {
+        return fluid == null ? Blocks.AIR : fluid.getDefaultState().getBlockState().getBlock();
+    }
+
+    public static String getTranslationKey(@Nullable Fluid fluid) {
+        return getBlockForFluid(fluid).getTranslationKey();
+    }
+
+    public static String getTranslationKey(@Nullable FluidReference<?> fluid) {
+        return fluid == null ? Blocks.AIR.getTranslationKey() : fluid.getTranslationKey();
+    }
+
+    public static Text getName(@Nullable Fluid fluid) {
+        return getBlockForFluid(fluid).getName();
+    }
+
+    public static Text getName(@Nullable FluidReference<?> fluid) {
+        return fluid == null ? Blocks.AIR.getName() : Text.translatable(getTranslationKey(fluid));
     }
 }

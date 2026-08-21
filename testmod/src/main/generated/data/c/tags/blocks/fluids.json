@@ -1,0 +1,23 @@
+{
+  "replace": false,
+  "values": [
+    "reservoir-testmod:milk",
+    "reservoir-testmod:steam",
+    "reservoir-testmod:white_dye",
+    "reservoir-testmod:orange_dye",
+    "reservoir-testmod:magenta_dye",
+    "reservoir-testmod:light_blue_dye",
+    "reservoir-testmod:yellow_dye",
+    "reservoir-testmod:lime_dye",
+    "reservoir-testmod:pink_dye",
+    "reservoir-testmod:gray_dye",
+    "reservoir-testmod:light_gray_dye",
+    "reservoir-testmod:cyan_dye",
+    "reservoir-testmod:purple_dye",
+    "reservoir-testmod:blue_dye",
+    "reservoir-testmod:brown_dye",
+    "reservoir-testmod:green_dye",
+    "reservoir-testmod:red_dye",
+    "reservoir-testmod:black_dye"
+  ]
+}

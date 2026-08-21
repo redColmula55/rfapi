@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "reservoir-testmod:steam/flowing",
+    "reservoir-testmod:steam/still"
+  ]
+}

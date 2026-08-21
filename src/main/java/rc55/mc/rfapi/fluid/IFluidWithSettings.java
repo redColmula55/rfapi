@@ -8,7 +8,6 @@ import org.jetbrains.annotations.ApiStatus;
  * Will be injected to {@link net.minecraft.fluid.Fluid}
  */
 @ApiStatus.NonExtendable
-@ApiStatus.Internal
 public interface IFluidWithSettings {
     default FluidSettings getSettings() {
         return FluidSettings.get((Fluid) this);

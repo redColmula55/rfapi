@@ -1,0 +1,25 @@
+{
+  "replace": false,
+  "values": [
+    "reservoir-testmod:steam_bucket",
+    "reservoir-testmod:milk_bucket",
+    "reservoir-testmod:white_dye_bucket",
+    "reservoir-testmod:orange_dye_bucket",
+    "reservoir-testmod:magenta_dye_bucket",
+    "reservoir-testmod:light_blue_dye_bucket",
+    "reservoir-testmod:yellow_dye_bucket",
+    "reservoir-testmod:lime_dye_bucket",
+    "reservoir-testmod:pink_dye_bucket",
+    "reservoir-testmod:gray_dye_bucket",
+    "reservoir-testmod:light_gray_dye_bucket",
+    "reservoir-testmod:cyan_dye_bucket",
+    "reservoir-testmod:purple_dye_bucket",
+    "reservoir-testmod:blue_dye_bucket",
+    "reservoir-testmod:brown_dye_bucket",
+    "reservoir-testmod:green_dye_bucket",
+    "reservoir-testmod:red_dye_bucket",
+    "reservoir-testmod:black_dye_bucket",
+    "#c:buckets/filled/ceramic",
+    "#c:buckets/filled/wooden"
+  ]
+}

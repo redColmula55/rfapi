@@ -14,6 +14,7 @@ import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import rc55.mc.rfapi.fluid.FluidReference;
+import rc55.mc.rfapi.fluid.FluidTags;
 
 /**
  * An ice like block that allows customizing melted state
@@ -60,7 +61,7 @@ public class FluidConvertibleBlock extends Block {
     }
 
     protected void melt(BlockState state, World world, BlockPos pos) {
-        if (world.getDimension().ultrawarm()) {
+        if (this.fluid.getStill().isIn(FluidTags.DISAPPEAR_IN_ULTRAWARM) && world.getDimension().ultrawarm()) {
             world.removeBlock(pos, false);
         } else {
             world.setBlockState(pos, this.getMeltedState());

@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:water_bucket",
+    "minecraft:lava_bucket",
+    "#c:water_buckets",
+    "#c:lava_buckets",
+    "#c:entity_water_buckets",
+    "#c:milk_buckets"
+  ]
+}

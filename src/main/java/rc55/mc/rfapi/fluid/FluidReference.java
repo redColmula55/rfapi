@@ -99,6 +99,10 @@ public class FluidReference<T extends FlowableFluid> {
         return blockId;
     }
 
+    public String getTranslationKey() {
+        return this.getBlock().getTranslationKey();
+    }
+
     public FluidSettings getSettings() {
         return settings;
     }

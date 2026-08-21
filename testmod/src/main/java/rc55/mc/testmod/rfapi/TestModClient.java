@@ -33,6 +33,11 @@ public class TestModClient implements ClientModInitializer {
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.BUILDING_BLOCKS).register(entries -> entries.add(TestModBlocks.MILK_ICE));
 
+        ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register(entries -> {
+            entries.add(TestModBlocks.LAVA_SPONGE);
+            entries.add(TestModBlocks.WET_LAVA_SPONGE);
+        });
+
         // Water has no item color by default, so we must register them manually
         FluidRenderRegistry.registerCustomColorProvider(0x0080FF, TestModItems.CERAMIC_WATER_BUCKET, TestModItems.WOODEN_WATER_BUCKET);
 

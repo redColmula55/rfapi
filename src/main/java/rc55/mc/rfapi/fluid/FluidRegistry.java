@@ -14,6 +14,8 @@ import net.minecraft.util.Identifier;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 /**
  * <h1>Fluid registry helper</h1>
@@ -94,11 +96,40 @@ public final class FluidRegistry {
             BiFunction<F, AbstractBlock.Settings, B> blockFactory,
             Function<FluidReference<F>, FluidSettings.Builder> settings
     ) {
+        return register(stillId, flowId, blockId, stillFactory, flowingFactory, blockFactory, settings, Function.identity());
+    }
+
+    /**
+     * Register a fluid with a customized block, still, flowing factor and block settings
+     * @param stillId ID for the still factor
+     * @param flowId ID for the flowing factor
+     * @param blockId ID for the fluid block
+     * @param stillFactory Object factory used to create customized still fluid object
+     * @param flowingFactory Object factory used to create customized flowing fluid object
+     * @param blockFactory Object factory used to create customized fluid block
+     * @param settings The fluid settings builder
+     * @param blockSettingsAdapter A function that allows you to customize some
+     *                             block settings on top of the automatically
+     *                             created one, see {@linkplain FluidReference#createBlockSettings() how the settings was created}
+     * @return The fluid reference
+     * @param <F> The fluid type
+     * @param <B> The fluid block type
+     */
+    public static <F extends FlowableFluid, B extends FluidBlock> FluidReference<F> register(
+            Identifier stillId,
+            Identifier flowId,
+            Identifier blockId,
+            BiFunction<FluidSettings, FluidReference<F>, F> stillFactory,
+            BiFunction<FluidSettings, FluidReference<F>, F> flowingFactory,
+            BiFunction<F, AbstractBlock.Settings, B> blockFactory,
+            Function<FluidReference<F>, FluidSettings.Builder> settings,
+            Function<AbstractBlock.Settings, ? extends AbstractBlock.Settings> blockSettingsAdapter
+    ) {
         final FluidReference<F> reference = new FluidReference<>(stillId, flowId, blockId, settings);
         F still = register(stillId, stillFactory.apply(reference.getSettings(), reference));
         F flow = register(flowId, flowingFactory.apply(reference.getSettings(), reference));
         FluidSettings.register(reference);
-        B block = registerFluidBlock(blockId, reference, blockFactory);
+        B block = registerFluidBlock(blockId, reference, blockFactory, blockSettingsAdapter);
 
         reference.onRegister(still, flow, block);
 
@@ -118,9 +149,10 @@ public final class FluidRegistry {
     private static <F extends FlowableFluid, B extends FluidBlock> B registerFluidBlock(
             Identifier id,
             FluidReference<F> fluid,
-            BiFunction<F, AbstractBlock.Settings, B> blockFactory
+            BiFunction<F, AbstractBlock.Settings, B> blockFactory,
+            Function<AbstractBlock.Settings, ? extends AbstractBlock.Settings> settingsAdapter
     ) {
-        return Registry.register(Registries.BLOCK, id, blockFactory.apply(fluid.getStill(), fluid.createBlockSettings()));
+        return Registry.register(Registries.BLOCK, id, blockFactory.apply(fluid.getStill(), settingsAdapter.apply(fluid.createBlockSettings())));
     }
 
     public static RegistryKey<Fluid> keyFor(Identifier id) {
@@ -149,5 +181,13 @@ public final class FluidRegistry {
 
     public static int getRawId(Fluid fluid) {
         return Registries.FLUID.getRawId(fluid);
+    }
+
+    public static Stream<Fluid> stream() {
+        return Registries.FLUID.stream();
+    }
+
+    public static Stream<Fluid> stream(Predicate<? super Fluid> predicate) {
+        return stream().filter(predicate);
     }
 }

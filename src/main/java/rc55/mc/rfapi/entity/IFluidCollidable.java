@@ -10,7 +10,6 @@ import java.util.function.Predicate;
  * Will be automatically injected to {@link net.minecraft.entity.Entity}
  */
 @ApiStatus.NonExtendable
-@ApiStatus.Internal
 public interface IFluidCollidable {
     default boolean isTouchingFluid(Predicate<Fluid> predicate) {
         return false;

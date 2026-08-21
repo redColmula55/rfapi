@@ -1,4 +1,4 @@
-package rc55.mc.rfapi.data.gen;
+package rc55.mc.rfapi.data.gen.internal;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.minecraft.block.Blocks;
@@ -6,6 +6,7 @@ import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.util.Identifier;
 import rc55.mc.rfapi.data.FluidIngredient;
 import rc55.mc.rfapi.data.StateIngredient;
+import rc55.mc.rfapi.data.gen.AbstractFluidReactionDataProvider;
 
 /**
  * Generates vanilla fluid reaction datas

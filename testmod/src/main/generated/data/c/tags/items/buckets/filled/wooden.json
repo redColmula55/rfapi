@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "reservoir-testmod:wooden_bucket/water",
+    "reservoir-testmod:wooden_bucket/milk"
+  ]
+}

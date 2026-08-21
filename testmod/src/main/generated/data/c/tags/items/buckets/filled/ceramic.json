@@ -1,0 +1,22 @@
+{
+  "replace": false,
+  "values": [
+    "reservoir-testmod:ceramic_bucket/water",
+    "reservoir-testmod:ceramic_bucket/white_dye",
+    "reservoir-testmod:ceramic_bucket/orange_dye",
+    "reservoir-testmod:ceramic_bucket/magenta_dye",
+    "reservoir-testmod:ceramic_bucket/light_blue_dye",
+    "reservoir-testmod:ceramic_bucket/yellow_dye",
+    "reservoir-testmod:ceramic_bucket/lime_dye",
+    "reservoir-testmod:ceramic_bucket/pink_dye",
+    "reservoir-testmod:ceramic_bucket/gray_dye",
+    "reservoir-testmod:ceramic_bucket/light_gray_dye",
+    "reservoir-testmod:ceramic_bucket/cyan_dye",
+    "reservoir-testmod:ceramic_bucket/purple_dye",
+    "reservoir-testmod:ceramic_bucket/blue_dye",
+    "reservoir-testmod:ceramic_bucket/brown_dye",
+    "reservoir-testmod:ceramic_bucket/green_dye",
+    "reservoir-testmod:ceramic_bucket/red_dye",
+    "reservoir-testmod:ceramic_bucket/black_dye"
+  ]
+}
