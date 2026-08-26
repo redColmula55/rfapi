@@ -28,7 +28,10 @@ public class TestModFluids {
 
     public static final FluidReference<ExtendedFluid> STEAM = FluidRegistry.registerSimple(
             Identifier.of(MODID, "steam"),
-            FluidSettings.waterLike().temperature(450).bucket(() -> TestModItems.STEAM_BUCKET).flowsUp()
+            FluidSettings.waterLike().bucket(() -> TestModItems.STEAM_BUCKET)
+                    .flowsUp()
+                    .color(FluidSettings.ColorSettings.builder().fixedColor(0xFFFFFF).itemColor(0xF0F0F0).fog(FluidSettings.ColorSettings.FogType.NONE, 0xFFFFFF))
+                    .temperature(450)
     );
 
     public static final Map<DyeColor, FluidReference<ExtendedFluid>> DYE_FLUIDS = TestModMain.mapOf(DyeColor.class, color -> FluidRegistry.registerSimple(

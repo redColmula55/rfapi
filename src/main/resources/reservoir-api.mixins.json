@@ -2,7 +2,7 @@
   "required": true,
   "package": "rc55.mc.rfapi.mixin",
   "compatibilityLevel": "JAVA_17",
-  "plugin": "rc55.mc.rfapi.mixin.compat.FluidLibMixinPlugin",
+  "plugin": "rc55.mc.rfapi.mixin.compat.RFApiMixinPlugin",
   "mixins": [
     "AquaticMoveControlMixin",
     "AxolotlBrainMixin",

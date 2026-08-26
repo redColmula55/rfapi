@@ -7,7 +7,6 @@ import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry
 import net.fabricmc.fabric.api.client.render.fluid.v1.SimpleFluidRenderHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.texture.Sprite;
@@ -28,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 /**
- * Renderer for FluidLib fluids
+ * Renderer for RFAPI fluids
  * Modified from Forge fluid renderer
  * @see FluidRenderRegistry
  */
@@ -264,10 +263,10 @@ public class ExtendedFluidRenderHandler implements FluidRenderHandler {
                 float g = shaderDown * colorG;
                 float b = shaderDown * colorB;
                 if (flowsUp) {
-                    this.vertex(vertexConsumer, chunkX + 1.0, chunkY + 1 - yOffset, chunkZ + 0.0, r, g, b, minU, maxV, light);
-                    this.vertex(vertexConsumer, chunkX + 1.0, chunkY + 1 - yOffset, chunkZ + 1.0, r, g, b, minU, minV, light);
-                    this.vertex(vertexConsumer, chunkX + 0.0, chunkY + 1 - yOffset, chunkZ + 1.0, r, g, b, maxU, minV, light);
-                    this.vertex(vertexConsumer, chunkX + 0.0, chunkY + 1 - yOffset, chunkZ + 0.0, r, g, b, maxU, maxV, light);
+                    this.vertex(vertexConsumer, chunkX + 1.0, chunkY + 1 - yOffset, chunkZ + 1.0, r, g, b, minU, maxV, light);
+                    this.vertex(vertexConsumer, chunkX + 1.0, chunkY + 1 - yOffset, chunkZ + 0.0, r, g, b, minU, minV, light);
+                    this.vertex(vertexConsumer, chunkX + 0.0, chunkY + 1 - yOffset, chunkZ + 0.0, r, g, b, maxU, minV, light);
+                    this.vertex(vertexConsumer, chunkX + 0.0, chunkY + 1 - yOffset, chunkZ + 1.0, r, g, b, maxU, maxV, light);
                 } else {
                     this.vertex(vertexConsumer, chunkX + 0.0, chunkY + yOffset, chunkZ + 1.0, r, g, b, minU, maxV, light);
                     this.vertex(vertexConsumer, chunkX + 0.0, chunkY + yOffset, chunkZ + 0.0, r, g, b, minU, minV, light);
@@ -340,15 +339,15 @@ public class ExtendedFluidRenderHandler implements FluidRenderHandler {
                     float g = shaderUp * shaderSide * colorG;
                     float b = shaderUp * shaderSide * colorB;
                     if (flowsUp) {
-                        this.vertex(vertexConsumer, x1, chunkY + 1 - yOffset, z1, r, g, b, u1, v3, light);
-                        this.vertex(vertexConsumer, x2, chunkY + 1 - yOffset, z2, r, g, b, u2, v3, light);
-                        this.vertex(vertexConsumer, x2, chunkY + 1 - height2, z2, r, g, b, u2, v2, light);
                         this.vertex(vertexConsumer, x1, chunkY + 1 - height1, z1, r, g, b, u1, v1, light);
+                        this.vertex(vertexConsumer, x2, chunkY + 1 - height2, z2, r, g, b, u2, v2, light);
+                        this.vertex(vertexConsumer, x2, chunkY + 1 - yOffset, z2, r, g, b, u2, v3, light);
+                        this.vertex(vertexConsumer, x1, chunkY + 1 - yOffset, z1, r, g, b, u1, v3, light);
                         if (sprite.getAtlasId() != this.overlayTexture) {
-                            this.vertex(vertexConsumer, x1, chunkY + 1 - height1, z1, r, g, b, u1, v1, light);
-                            this.vertex(vertexConsumer, x2, chunkY + 1 - height2, z2, r, g, b, u2, v2, light);
-                            this.vertex(vertexConsumer, x2, chunkY + 1 - yOffset, z2, r, g, b, u2, v2, light);
                             this.vertex(vertexConsumer, x1, chunkY + 1 - yOffset, z1, r, g, b, u1, v3, light);
+                            this.vertex(vertexConsumer, x2, chunkY + 1 - yOffset, z2, r, g, b, u2, v3, light);
+                            this.vertex(vertexConsumer, x2, chunkY + 1 - height2, z2, r, g, b, u2, v2, light);
+                            this.vertex(vertexConsumer, x1, chunkY + 1 - height1, z1, r, g, b, u1, v1, light);
                         }
                     } else {
                         this.vertex(vertexConsumer, x1, chunkY + height1, z1, r, g, b, u1, v1, light);
@@ -418,12 +417,12 @@ public class ExtendedFluidRenderHandler implements FluidRenderHandler {
 
     protected int getLight(BlockRenderView world, BlockPos pos) {
         int i = WorldRenderer.getLightmapCoordinates(world, pos);
-        int j = WorldRenderer.getLightmapCoordinates(world, this.flowsUp ? pos.down() : pos.up());
-        int k = i & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 15);
-        int l = j & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 15);
-        int m = i >> 16 & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 15);
-        int n = j >> 16 & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 15);
-        return (Math.max(k, l) | Math.max(m, n)) << 16;
+        int j = WorldRenderer.getLightmapCoordinates(world, pos.up());
+        int k = i & 255;
+        int l = j & 255;
+        int m = i >> 16 & 255;
+        int n = j >> 16 & 255;
+        return (Math.max(k, l)) | (Math.max(m, n)) << 16;
     }
 
     protected static boolean isSameFluid(FluidState a, FluidState b) {

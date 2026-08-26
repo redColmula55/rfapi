@@ -9,7 +9,7 @@ import rc55.mc.rfapi.mixin.compat.client.FluidRendererMixin;
 import java.util.List;
 import java.util.Set;
 
-public final class FluidLibMixinPlugin implements IMixinConfigPlugin {
+public final class RFApiMixinPlugin implements IMixinConfigPlugin {
     @Override
     public void onLoad(String mixinPackage) {
     }

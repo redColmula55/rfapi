@@ -1,7 +1,7 @@
 package rc55.mc.rfapi.block;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.TransparentBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -19,7 +19,7 @@ import rc55.mc.rfapi.fluid.FluidTags;
 /**
  * An ice like block that allows customizing melted state
  */
-public class FluidConvertibleBlock extends Block {
+public class FluidConvertibleBlock extends TransparentBlock {
     protected final FluidReference<?> fluid;
 
     public FluidConvertibleBlock(FluidReference<?> fluid, Settings settings) {

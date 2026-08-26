@@ -10,6 +10,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.MapColor;
+import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.fluid.*;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
@@ -144,7 +145,7 @@ public class FluidSettings implements FluidVariantAttributeHandler {
                 .movementType(EntityMovementType.WATER)
                 .color(ColorSettings.builder()
                         .defaultColor(0x3F76E4)
-                        .renderColor((world, pos) -> world.getColor(pos, (biome, x, z) -> biome.getWaterColor()))
+                        .renderColor(BiomeColors::getWaterColor)
                         // Currently no biome based fog color for water, so we use default color here
                         .fog(ColorSettings.FogType.WATER, 0x050533)
                 )

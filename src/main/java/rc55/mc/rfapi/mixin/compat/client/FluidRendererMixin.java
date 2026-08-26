@@ -40,7 +40,7 @@ import rc55.mc.rfapi.client.FluidRenderRegistry;
 import rc55.mc.rfapi.fluid.FluidSettings;
 
 /**
- * Fluid renderer for FluidLib fluids
+ * Fluid renderer for RFAPI fluids
  * Sodium compatible
  * @author redColmula55
  */
@@ -275,7 +275,7 @@ public abstract class FluidRendererMixin {
                     setVertex(quad, 3, 1.0F, yOffset, 1.0F, maxU, maxV);
                 }
                 this.updateQuad(quad, world, pos, lighter, flowsUp ? Direction.UP : Direction.DOWN, 1.0F, colorProvider, fluidState);
-                this.writeQuad(meshBuilder, material, offset, quad, ModelQuadFacing.NEG_Y, false);
+                this.writeQuad(meshBuilder, material, offset, quad, flowsUp ? ModelQuadFacing.POS_Y : ModelQuadFacing.NEG_Y, false);
             }
 
             quad.setFlags(6);
