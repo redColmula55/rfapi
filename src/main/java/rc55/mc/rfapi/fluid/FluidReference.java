@@ -8,6 +8,8 @@ import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.fluid.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -103,6 +105,10 @@ public class FluidReference<T extends FlowableFluid> {
         return this.getBlock().getTranslationKey();
     }
 
+    public MutableText getName() {
+        return Text.translatable(this.getTranslationKey());
+    }
+
     public FluidSettings getSettings() {
         return settings;
     }
@@ -140,15 +146,16 @@ public class FluidReference<T extends FlowableFluid> {
         return fluid != null && this.isOf(fluid) && fluid == FluidHelper.trim(fluid);
     }
 
+    private int rawId = -1;
     @Override
     public int hashCode() {
-        return FluidRegistry.getRawId(this.getStill());
+        return rawId == -1 ? (rawId = FluidRegistry.getRawId(this.getStill())) : rawId;
     }
 
     @Override
     public boolean equals(@Nullable Object obj) {
-        if (obj == null) {
-            return false;
+        if (obj == this) {
+            return true;
         } else if (obj instanceof FluidReference<?>) {
             return this.isOf((FluidReference<?>) obj);
         } else {

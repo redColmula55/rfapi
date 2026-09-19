@@ -1,8 +1,6 @@
 package rc55.mc.testmod.rfapi.block;
 
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
+import net.minecraft.block.*;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
@@ -28,6 +26,10 @@ public class TestModBlocks {
     public static final FluidAbsorbingBlock LAVA_SPONGE = register("lava_sponge",
             s -> new FluidAbsorbingBlock(fluid -> fluid.isIn(FluidTags.LAVA), WET_LAVA_SPONGE.getDefaultState(), s),
             AbstractBlock.Settings.copy(Blocks.SPONGE)
+    );
+
+    public static final FluidBlock OIL_FLUID_BLOCK = register("oil",
+            s -> new FluidBlock(TestModFluids.STILL_OIL, s), AbstractBlock.Settings.copy(Blocks.WATER), false
     );
 
     private static <T extends Block, S extends AbstractBlock.Settings> T register(String id, Function<S, T> blockFactory, S settings, boolean withItem) {

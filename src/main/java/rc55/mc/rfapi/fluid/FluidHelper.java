@@ -35,7 +35,7 @@ public class FluidHelper {
     /**
      * Calculates if a fluid can flow "into" another fluid(treat that fluid like air and flow through)
      * This handles {@link FluidReactionType#FLOW_INTO} logics so it needs to be hooked to vanilla fluids
-     * Here we extract it into a static method so we can perform the hook with {@linkplain rc55.mc.rfapi.mixin.FluidStateMixin#fluidlib$hookCustomFlowIntoLogic(Fluid, FluidState, BlockView, BlockPos, Fluid, Direction) mixins}
+     * Here we extract it into a static method so we can perform the hook with {@linkplain rc55.mc.rfapi.mixin.FluidStateMixin#rfapi$hookCustomFlowIntoLogic(Fluid, FluidState, BlockView, BlockPos, Fluid, Direction)}  mixins}
      * @param self The fluid instance which tries to call this method
      * @param state Fluid state to flow into
      * @param world World instance
@@ -64,7 +64,7 @@ public class FluidHelper {
     /**
      * Calculates new fluid state while fluids tries to flow to another position
      * This also handles custom source conversion logics so it needs to be hooked to vanilla fluids
-     * Here we extract it into a static method so we can perform the hook with {@linkplain rc55.mc.rfapi.mixin.FlowableFluidMixin#fluidlib$hookCustomSourceConversion(World, BlockPos, BlockState, CallbackInfoReturnable) mixins}
+     * Here we extract it into a static method so we can perform the hook with {@linkplain rc55.mc.rfapi.mixin.FlowableFluidMixin#rfapi$hookCustomSourceConversion(World, BlockPos, BlockState, CallbackInfoReturnable) mixins}
      * @param self The fluid instance which tries to call this method
      * @param world World instance
      * @param pos Pos to flow into
@@ -194,9 +194,9 @@ public class FluidHelper {
     @ApiStatus.Internal
     public static boolean checkEntityMoveAction(Fluid fluid, TagKey<Fluid> tag) {
         final FluidSettings settings = fluid.getSettings();
-        if (tag == net.minecraft.registry.tag.FluidTags.WATER || tag == FluidTags.DUMMY_WATER_PHYSICS_TAG) {
+        if (tag == FluidTags.WATER || tag == FluidTags.DUMMY_WATER_PHYSICS_TAG) {
             return settings.getMovementType() == FluidSettings.EntityMovementType.WATER;
-        } else if (tag == net.minecraft.registry.tag.FluidTags.LAVA || tag == FluidTags.DUMMY_LAVA_PHYSICS_TAG) {
+        } else if (tag == FluidTags.LAVA || tag == FluidTags.DUMMY_LAVA_PHYSICS_TAG) {
             return settings.getMovementType() == FluidSettings.EntityMovementType.LAVA;
         }
         return fluid.isIn(tag);

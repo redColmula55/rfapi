@@ -74,7 +74,13 @@ public final class BucketItemDispenserBehavior {
                 } else {
                     base = Items.BUCKET;
                 }
-                if (fluidModificationItem.placeFluid(null, world, blockPos, null)) {
+                boolean placed;
+                if (stack.getItem() instanceof ExtendedBucketItem ex) {
+                    placed = ex.placeFluid(null, world, blockPos, stack, null);
+                } else {
+                    placed = fluidModificationItem.placeFluid(null, world, blockPos, null);
+                }
+                if (placed) {
                     fluidModificationItem.onEmptied(null, world, stack, blockPos);
                     if (stack.getCount() > 1 && pointer.<DispenserBlockEntity>getBlockEntity().addToFirstFreeSlot(new ItemStack(base)) == -1) {
                         FALLBACK_BEHAVIOR.dispense(pointer, new ItemStack(base));

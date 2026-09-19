@@ -1,6 +1,9 @@
 package rc55.mc.testmod.rfapi.fluid;
 
 import net.minecraft.block.MapColor;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import rc55.mc.rfapi.fluid.ExtendedFluid;
@@ -47,6 +50,13 @@ public class TestModFluids {
     private static int colorFor(DyeColor dyeColor) {
         float[] color = dyeColor.getColorComponents();
         return FluidSettings.ColorSettings.toRgb(color[0], color[1], color[2]);
+    }
+
+    public static final OilFluid STILL_OIL = register("oil/still", new OilFluid.Still());
+    public static final OilFluid FLOWING_OIL = register("oil/flowing", new OilFluid.Flowing());
+
+    private static <T extends Fluid> T register(String id, T fluid) {
+        return Registry.register(Registries.FLUID, Identifier.of(MODID, id), fluid);
     }
 
     public static void init() {

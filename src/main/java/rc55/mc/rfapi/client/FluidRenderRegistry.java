@@ -50,6 +50,8 @@ public class FluidRenderRegistry {
                     )
             );
         }
+        // Particle effects color, although barely useless
+        ColorProviderRegistry.BLOCK.register((state, world, pos, tintIndex) -> fluid.getSettings().getDefaultColor(), fluid.getBlock());
     }
 
     /**

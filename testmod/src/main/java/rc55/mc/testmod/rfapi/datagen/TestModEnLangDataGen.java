@@ -25,8 +25,9 @@ public class TestModEnLangDataGen extends FabricLanguageProvider {
             RFApiLangProviderHelper.provideFluid(builder, fluid, colors[color.getId()] + " Dye");
         });
 
-        RFApiLangProviderHelper.provideFluid(builder, TestModFluids.MILK, "Milk(Fluid)");
+        RFApiLangProviderHelper.provideFluid(builder, TestModFluids.MILK, "Milk");
         RFApiLangProviderHelper.provideFluid(builder, TestModFluids.STEAM, "Steam");
+        RFApiLangProviderHelper.provideFluid(builder, TestModFluids.STILL_OIL, "Oil");
 
         RFApiLangProviderHelper.provideBucket(builder, (ExtendedBucketItem) TestModItems.CERAMIC_BUCKET, "Ceramic Bucket", "Ceramic %s Bucket");
         RFApiLangProviderHelper.provideBucket(builder, (ExtendedBucketItem) TestModItems.WOODEN_BUCKET, "Wooden Bucket", "Wooden %s Bucket");
@@ -35,5 +36,7 @@ public class TestModEnLangDataGen extends FabricLanguageProvider {
 
         builder.add(TestModBlocks.LAVA_SPONGE, "Lava Sponge");
         builder.add(TestModBlocks.WET_LAVA_SPONGE, "Wet Lava Sponge");
+
+        builder.add(TestModItems.MILK_FLUID_BUCKET, "Milk(Fluid) Bucket");
     }
 }

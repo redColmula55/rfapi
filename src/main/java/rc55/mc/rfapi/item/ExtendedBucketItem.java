@@ -36,7 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * FluidLib version of buckets
+ * RFAPI version of buckets
  * <ul>
  *     <li>Can have multiple type of buckets</li>
  *     <li>Stackable</li>
@@ -122,6 +122,9 @@ public class ExtendedBucketItem extends BucketItem {
      * Check if the stack is an empty bucket
      */
     public static boolean isEmpty(ItemStack stack) {
+        if (stack.getItem() instanceof ExtendedBucketItem ex) {
+            return ex.isEmpty() || ex.getFluid(stack) == null || ex.getFluid(stack) == Fluids.EMPTY;
+        }
         return isEmpty(stack.getItem());
     }
 
@@ -146,7 +149,7 @@ public class ExtendedBucketItem extends BucketItem {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
-        BlockHitResult hitResult = raycast(world, user, this.fluid == Fluids.EMPTY ? RaycastContext.FluidHandling.SOURCE_ONLY : RaycastContext.FluidHandling.NONE);
+        BlockHitResult hitResult = raycast(world, user, this.isStackEmpty(stack) ? RaycastContext.FluidHandling.SOURCE_ONLY : RaycastContext.FluidHandling.NONE);
         // Miss
         if (hitResult.getType() == HitResult.Type.MISS) {
             return TypedActionResult.pass(stack);
@@ -160,7 +163,7 @@ public class ExtendedBucketItem extends BucketItem {
         if (!world.canPlayerModifyAt(user, hitPos) || !user.canPlaceOn(hitSideOffsetPos, hitSide, stack)) {
             // Not placeable
             return TypedActionResult.fail(stack);
-        } else if (this.isEmpty()) {
+        } else if (this.isStackEmpty(stack)) {
             // Pick up
             BlockState blockState = world.getBlockState(hitPos);
             if (blockState.getBlock() instanceof FluidDrainable fluidDrainable) {
@@ -187,7 +190,7 @@ public class ExtendedBucketItem extends BucketItem {
         } else {
             // Place
             BlockPos pos = world.getBlockState(hitPos).getBlock() instanceof FluidFillable && this.fluid.matchesType(Fluids.WATER) ? hitPos : hitSideOffsetPos;
-            if (this.placeFluid(user, world, pos, hitResult)) {
+            if (this.placeFluid(user, world, pos, stack, hitResult)) {
                 this.onEmptied(user, world, stack, pos);
                 if (user instanceof ServerPlayerEntity) {
                     Criteria.PLACED_BLOCK.trigger((ServerPlayerEntity)user, pos, stack);
@@ -204,13 +207,17 @@ public class ExtendedBucketItem extends BucketItem {
 
     @Override
     public boolean placeFluid(@Nullable PlayerEntity player, World world, BlockPos pos, @Nullable BlockHitResult hitResult) {
+        return this.placeFluid(player, world, pos, this.getDefaultStack(), hitResult);
+    }
+
+    public boolean placeFluid(@Nullable PlayerEntity player, World world, BlockPos pos, ItemStack stack, @Nullable BlockHitResult hitResult) {
         BlockState state = world.getBlockState(pos);
         Block block = state.getBlock();
-        boolean canPlaceHere = state.isAir() || state.canBucketPlace(this.fluid) ||
-                (block instanceof FluidFillable fillable && fillable.canFillWithFluid(world, pos, state, this.fluid));
+        boolean canPlaceHere = state.isAir() || state.canBucketPlace(this.getFluid(stack)) ||
+                (block instanceof FluidFillable fillable && fillable.canFillWithFluid(world, pos, state, this.getFluid(stack)));
         if (!canPlaceHere) {
-            return hitResult != null && this.placeFluid(player, world, hitResult.getBlockPos().offset(hitResult.getSide()), null);
-        } else if (world.getDimension().ultrawarm() && this.fluid.isIn(FluidTags.DISAPPEAR_IN_ULTRAWARM)) {
+            return hitResult != null && this.placeFluid(player, world, hitResult.getBlockPos().offset(hitResult.getSide()), stack, null);
+        } else if (world.getDimension().ultrawarm() && this.getFluid(stack).isIn(FluidTags.DISAPPEAR_IN_ULTRAWARM)) {
             // Not avail in ultrawarm, disappear
             final int x = pos.getX();
             final int y = pos.getY();
@@ -223,18 +230,18 @@ public class ExtendedBucketItem extends BucketItem {
                 world.addParticle(ParticleTypes.LARGE_SMOKE, x + Math.random(), y + Math.random(), z + Math.random(), 0.0, 0.0, 0.0);
             }
             return true;
-        } else if (block instanceof FluidFillable fillable && Fluids.WATER.matchesType(this.fluid)) {
+        } else if (block instanceof FluidFillable fillable && Fluids.WATER.matchesType(this.getFluid(stack))) {
             // Waterlog block
-            fillable.tryFillWithFluid(world, pos, state, ((FlowableFluid)this.fluid).getStill(false));
+            fillable.tryFillWithFluid(world, pos, state, ((FlowableFluid)this.getFluid(stack)).getStill(false));
             this.playEmptyingSound(player, world, pos);
             return true;
         } else {
             // Break block
-            if (!world.isClient && state.canBucketPlace(this.fluid) && !state.isLiquid()) {
+            if (!world.isClient && state.canBucketPlace(this.getFluid(stack)) && !state.isLiquid()) {
                 world.breakBlock(pos, true);
             }
             // Place fluid block
-            if (!world.setBlockState(pos, this.fluid.getDefaultState().getBlockState(), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD)
+            if (!world.setBlockState(pos, this.getFluid(stack).getDefaultState().getBlockState(), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD)
                     && !state.getFluidState().isStill()
             ) {
                 return false;
@@ -263,7 +270,14 @@ public class ExtendedBucketItem extends BucketItem {
 
     @Override
     public Text getName(ItemStack stack) {
-        return this.getName();
+        if (this.isStackEmpty(stack)) {
+            return this.getName();
+        } else {
+            return Text.translatable(
+                    this.isEmpty() ? this.getContextTranslationKey() : this.getBaseTranslationKey(),
+                    FluidHelper.getName(this.getFluid(stack))
+            );
+        }
     }
 
     /**
@@ -293,7 +307,7 @@ public class ExtendedBucketItem extends BucketItem {
             if (this.isEmpty()) {
                 this.contextTranslationKey = this.getTranslationKey() + ".filled";
             } else {
-                this.contextTranslationKey = this.fluid.getDefaultState().getBlockState().getBlock().getTranslationKey();
+                this.contextTranslationKey = FluidHelper.getTranslationKey(this.getFluid());
             }
         }
         return this.contextTranslationKey;
@@ -320,6 +334,13 @@ public class ExtendedBucketItem extends BucketItem {
         return this.fluid;
     }
 
+    public Fluid getFluid(ItemStack stack) {
+        if (stack.getOrCreateNbt().contains("Fluid")) {
+            return FluidRegistry.get(stack.getOrCreateNbt().getString("Fluid"));
+        }
+        return this.getFluid();
+    }
+
     /**
      * Get fluid bucket for this bucket
      * @param fluid Fluid type
@@ -338,5 +359,13 @@ public class ExtendedBucketItem extends BucketItem {
      */
     public boolean isEmpty() {
         return this.baseItem == null || this.fluid == Fluids.EMPTY;
+    }
+
+    public boolean isStackEmpty(ItemStack stack) {
+        if (this.getFluid(stack) != Fluids.EMPTY) {
+            return false;
+        } else {
+            return this.isEmpty();
+        }
     }
 }

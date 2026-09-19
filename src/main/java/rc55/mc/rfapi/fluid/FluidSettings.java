@@ -42,7 +42,7 @@ import java.util.function.*;
 @SuppressWarnings({"UnstableApiUsage", "OptionalUsedAsFieldOrParameterType"})
 public class FluidSettings implements FluidVariantAttributeHandler {
     private final Supplier<Block> fluidBlockSupplier;
-    private final Supplier<@Nullable Item> bucketItemSupplier;
+    private final Supplier<Item> bucketItemSupplier;
     private final ToIntFunction<WorldView> flowSpeedGetter, tickRateGetter, levelDecrPerBlockGetter;
     private final Optional<SoundEvent> bucketFillSound, bucketEmptySound;
     private final @Nullable ParticleEffect drippingParticle;
@@ -55,7 +55,7 @@ public class FluidSettings implements FluidVariantAttributeHandler {
 
     private FluidSettings(
             Supplier<Block> fluidBlockSupplier,
-            Supplier<@Nullable Item> bucketItemSupplier,
+            Supplier<Item> bucketItemSupplier,
             ToIntFunction<WorldView> flowSpeedGetter,
             ToIntFunction<WorldView> tickRateGetter,
             ToIntFunction<WorldView> levelDecrPerBlockGetter,
@@ -218,7 +218,7 @@ public class FluidSettings implements FluidVariantAttributeHandler {
     }
 
     public Item getBucketItem() {
-        return Optional.ofNullable(this.bucketItemSupplier).map(Supplier::get).orElse(Items.AIR);
+        return this.bucketItemSupplier == null ? Items.AIR : this.bucketItemSupplier.get();
     }
     public int getFlowSpeed(WorldView world) {
         return this.flowSpeedGetter.applyAsInt(world);
@@ -335,7 +335,7 @@ public class FluidSettings implements FluidVariantAttributeHandler {
      */
     public static class Builder {
         private Supplier<Block> fluidBlockSupplier;
-        private Supplier<@Nullable Item> bucketItemSupplier = () -> null;
+        private Supplier<Item> bucketItemSupplier = () -> Items.AIR;
         private ToIntFunction<WorldView> flowSpeedGetter, tickRateGetter, levelDecrPerBlockGetter;
         private Optional<SoundEvent> bucketFillSound, bucketEmptySound;
         private @Nullable ParticleEffect drippingParticle;

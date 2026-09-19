@@ -1,7 +1,11 @@
 package rc55.mc.rfapi.mixin;
 
 import com.google.common.base.Predicates;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import net.minecraft.entity.Entity;
@@ -24,7 +28,6 @@ import rc55.mc.rfapi.fluid.FluidSettings;
 
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 @Mixin(Entity.class)
 public abstract class EntityMixin implements IFluidCollidable {
@@ -35,21 +38,20 @@ public abstract class EntityMixin implements IFluidCollidable {
     protected Object2DoubleMap<TagKey<Fluid>> fluidHeight;
 
     // Adds dummy tags in submergedFluidTag, in order to modify physics related submersion check
-    @Redirect(
+    @Inject(
             at = @At(value = "INVOKE", target = "Lnet/minecraft/fluid/FluidState;streamTags()Ljava/util/stream/Stream;"),
             method = "updateSubmergedInWaterState"
     )
-    public Stream<TagKey<Fluid>> rfapi$appendDummyFluidTags(FluidState instance) {
-        final FluidSettings.EntityMovementType type = instance.getFluid().getSettings().getMovementType();
+    public void rfapi$appendDummyFluidTags(CallbackInfo ci, @Local FluidState fluidState) {
+        final FluidSettings.EntityMovementType type = fluidState.getFluid().getSettings().getMovementType();
         if (type == FluidSettings.EntityMovementType.WATER) {
             this.submergedFluidTag.add(FluidTags.DUMMY_WATER_PHYSICS_TAG);
         } else if (type == FluidSettings.EntityMovementType.LAVA) {
             this.submergedFluidTag.add(FluidTags.DUMMY_LAVA_PHYSICS_TAG);
         }
-        if (!instance.isEmpty() && !instance.getFluid().getSettings().canEntityBreath()) {
+        if (!fluidState.isEmpty() && !fluidState.getFluid().getSettings().canEntityBreath()) {
             this.submergedFluidTag.add(FluidTags.DUMMY_UNBREATHABLE_TAG);
         }
-        return instance.streamTags();
     }
 
     @Inject(at = @At("HEAD"), method = "updateWaterState")
@@ -88,57 +90,98 @@ public abstract class EntityMixin implements IFluidCollidable {
         return original && !self.isInSwimmingPose() && !this.isTouchingFluid(Predicates.alwaysTrue());
     }
 
-    /**
-     * @author redColmula55
-     * @reason Changes fluid check for entities
-     */
-    @Overwrite
-    public double getFluidHeight(TagKey<Fluid> tag) {
+    @ModifyArg(
+            method = "getFluidHeight",
+            at = @At(value = "INVOKE", target = "Lit/unimi/dsi/fastutil/objects/Object2DoubleMap;getDouble(Ljava/lang/Object;)D"),
+            index = 0
+    )
+    public Object rfapi$modifyFluidHeightForMovementCheck(Object tag) {
         if (tag == FluidTags.WATER) {
-            return this.fluidHeight.getDouble(FluidTags.DUMMY_WATER_PHYSICS_TAG);
+            return FluidTags.DUMMY_WATER_PHYSICS_TAG;
         } else if (tag == FluidTags.LAVA) {
-            return this.fluidHeight.getDouble(FluidTags.DUMMY_LAVA_PHYSICS_TAG);
-        }
-        return this.fluidHeight.getDouble(tag);
-    }
-
-    /**
-     * @author redColmula55
-     * @reason Make watery fluid(Movement type set to {@link rc55.mc.rfapi.fluid.FluidSettings.EntityMovementType#WATER}) swimmable
-     */
-    @Overwrite
-    public void updateSwimming() {
-        final Entity self = (Entity)(Object) this;
-
-        if (self.isSwimming()) {
-            self.setSwimming(self.isSprinting()
-                    && this.isTouchingFluid(fluid -> fluid.getSettings().canSwim())
-                    && !self.hasVehicle()
-            );
+            return FluidTags.DUMMY_LAVA_PHYSICS_TAG;
         } else {
-            self.setSwimming(self.isSprinting()
-                    && this.submergedFluidTag.contains(FluidTags.DUMMY_WATER_PHYSICS_TAG)
-                    && !self.hasVehicle()
-                    && FluidSettings.get(self.getWorld().getFluidState(self.getBlockPos())).canSwim()
-            );
+            return tag;
         }
     }
 
-    /**
-     * @author redColmula55
-     * @reason Make fluids able to push entities
-     */
-    @Overwrite
-    public boolean updateMovementInFluid(TagKey<Fluid> tag, double speed) {
+    @WrapOperation(
+            method = "updateSwimming", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;isTouchingWater()Z")
+    )
+    public boolean rfapi$redirectSwimmingWaterCheck(Entity instance, Operation<Boolean> original) {
+        return instance.isTouchingFluid(fluid -> fluid.getSettings().canSwim());
+    }
+
+    @WrapOperation(
+            method = "updateSwimming", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;isSubmergedInWater()Z")
+    )
+    public boolean rfapi$redirectSwimmableWaterCheck(Entity instance, Operation<Boolean> original) {
+        return instance.isSubmergedIn(FluidTags.DUMMY_WATER_PHYSICS_TAG);
+    }
+
+    @WrapOperation(
+            method = "updateSwimming", at = @At(value = "INVOKE", target = "Lnet/minecraft/fluid/FluidState;isIn(Lnet/minecraft/registry/tag/TagKey;)Z")
+    )
+    public boolean rfapi$redirectSwimmableWaterCheck(FluidState instance, TagKey<Fluid> tag, Operation<Boolean> original) {
+        return instance.getFluid().getSettings().canSwim();
+    }
+
+    @ModifyExpressionValue(
+            method = "updateMovementInFluid",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/fluid/FluidState;isIn(Lnet/minecraft/registry/tag/TagKey;)Z")
+    )
+    public boolean rfapi$markUpdateMovementInFluid(boolean original, @Local(argsOnly = true) TagKey<Fluid> tag, @Local FluidState instance) {
         if (tag == FluidTags.WATER) {
-            this.updateMovementInFluid(FluidSettings.EntityMovementType.WATER, speed);
+            return instance.getFluid().getSettings().getMovementType() == FluidSettings.EntityMovementType.WATER;
         } else if (tag == FluidTags.LAVA) {
-            this.updateMovementInFluid(FluidSettings.EntityMovementType.LAVA, speed);
+            return instance.getFluid().getSettings().getMovementType() == FluidSettings.EntityMovementType.LAVA;
         } else {
-            this.updateMovementInFluid(FluidSettings.EntityMovementType.HORIZONTAL, speed);
-            return false;
+            return instance.getFluid().getSettings().getMovementType() == FluidSettings.EntityMovementType.HORIZONTAL;
         }
-        return this.fluidHeight.containsKey(tag);
+    }
+
+    @ModifyConstant(
+            method = "updateMovementInFluid",
+            constant = @Constant(intValue = 1),
+            slice = @Slice(
+                    from = @At(value = "NEW", target = "(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/util/math/BlockPos$Mutable;")
+            )
+    )
+    public int rfapi$redirectTouchingFluidTypeCheck(int constant, @Local(argsOnly = true) TagKey<Fluid> tag, @Local FluidState state) {
+        return state.isIn(tag) ? 1 : 0;
+    }
+
+    @WrapOperation(
+            method = "updateMovementInFluid",
+            at = @At(value = "INVOKE", target = "Ljava/lang/Math;max(DD)D")
+    )
+    public double rfapi$markTouchingFluidHeightForEntity(double a, double b, Operation<Double> ori, @Local FluidState state) {
+        double d = ori.call(a, b);
+        if (!state.isEmpty()) {
+            this.rfapi$fluidHeightMap.put(state.getFluid(), d);
+            if (state.isIn(FluidTags.WATER)) {
+                this.fluidHeight.put(FluidTags.WATER, d);
+            }
+            if (state.isIn(FluidTags.LAVA)) {
+                this.fluidHeight.put(FluidTags.LAVA, d);
+            }
+        }
+        return d;
+    }
+
+    @ModifyArg(
+            method = "updateMovementInFluid(Lnet/minecraft/registry/tag/TagKey;D)Z",
+            at = @At(value = "INVOKE", target = "Lit/unimi/dsi/fastutil/objects/Object2DoubleMap;put(Ljava/lang/Object;D)D"),
+            index = 0
+    )
+    public Object rfapi$appendDummyTags(Object tag) {
+        if (tag == FluidTags.WATER) {
+            return FluidTags.DUMMY_WATER_PHYSICS_TAG;
+        } else if (tag == FluidTags.LAVA) {
+            return FluidTags.DUMMY_LAVA_PHYSICS_TAG;
+        } else {
+            return tag;
+        }
     }
 
     @Unique
@@ -245,5 +288,10 @@ public abstract class EntityMixin implements IFluidCollidable {
             }
             return false;
         });
+    }
+
+    @Override
+    public double getTouchingFluidHeight(Fluid fluid) {
+        return this.rfapi$fluidHeightMap.getOrDefault(fluid, 0.);
     }
 }

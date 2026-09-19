@@ -7,6 +7,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
+import rc55.mc.rfapi.fluid.FluidReference;
 import rc55.mc.rfapi.item.BucketItemRegistry;
 import rc55.mc.rfapi.item.ExtendedBucketItem;
 import rc55.mc.testmod.rfapi.TestModMain;
@@ -29,6 +30,8 @@ public class TestModItems {
 
     public static final BucketItem CERAMIC_BUCKET = BucketItemRegistry.registerEmpty(new Identifier(MODID, "ceramic_bucket"), 1000, new Item.Settings());
     public static final BucketItem CERAMIC_WATER_BUCKET = BucketItemRegistry.register(new Identifier(MODID, "ceramic_bucket/water"), CERAMIC_BUCKET, Fluids.WATER, new Item.Settings());
+
+    public static final BucketItem OIL_BUCKET = BucketItemRegistry.registerVanilla(new Identifier(MODID, "oil_bucket"), FluidReference.of(TestModFluids.STILL_OIL), new Item.Settings());
 
     public static final Map<DyeColor, BucketItem> DYE_BUCKETS = TestModMain.mapOf(DyeColor.class, color -> BucketItemRegistry.registerVanilla(
             Identifier.of(MODID, color.getName() + "_dye_bucket"),

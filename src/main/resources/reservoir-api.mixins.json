@@ -32,6 +32,7 @@
     "LivingEntityMixin",
     "MobNavigationMixin",
     "NavigationConditionsMixin",
+    "ServerPlayerInteractionManagerMixin",
     "ServerWorldMixin",
     "SlimeSwimmingGoalMixin",
     "SquidEntityMixin",

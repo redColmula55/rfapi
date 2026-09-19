@@ -25,6 +25,12 @@ public class RFApiConfigs implements ConfigData {
 
     public boolean disableOpenWaterCheck = false;
 
+    /**
+     * Determines if the player can target at fluid blocks
+     * This means you can select & break fluid blocks like breaking normal blocks in Creative mode
+     */
+    public boolean drawFluidBlockOutline = false;
+
     @Environment(EnvType.CLIENT)
     public boolean clearLavaFog = false;
 
