@@ -9,6 +9,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
+import rc55.mc.rfapi.data.ByteBufSerializer;
 import rc55.mc.rfapi.data.CodecHelper;
 import rc55.mc.rfapi.data.FluidIngredient;
 import rc55.mc.rfapi.data.StateIngredient;
@@ -22,6 +23,7 @@ public class SimpleFluidReaction implements IFluidReaction<FluidReactionType<? e
     protected final BlockState result;
     protected final float chance;
 
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     public SimpleFluidReaction(
             FluidIngredient source,
             float chance,
@@ -46,6 +48,15 @@ public class SimpleFluidReaction implements IFluidReaction<FluidReactionType<? e
             StateIngredient.CODEC.optionalFieldOf("vertical_ingredient").forGetter(r -> r.verticalIngredient),
             CodecHelper.BLOCK_STATE.fieldOf("result").forGetter(r -> r.result)
     ).apply(i, SimpleFluidReaction::new));
+
+    public static final ByteBufSerializer<SimpleFluidReaction> BUF_CODEC = ByteBufSerializer.create(
+            SimpleFluidReaction::new,
+            r -> r.source, FluidIngredient.Synchronizer.INSTANCE,
+            r -> r.chance, ByteBufSerializer.FLOAT,
+            r -> r.surroundingIngredient, ByteBufSerializer.optional(StateIngredient.Synchronizer.INSTANCE, StateIngredient.EMPTY),
+            r -> r.verticalIngredient, ByteBufSerializer.optional(StateIngredient.Synchronizer.INSTANCE, StateIngredient.EMPTY),
+            r -> r.result, ByteBufSerializer.BLOCK_STATE
+    );
 
     @Override
     public FluidReactionType<? extends SimpleFluidReaction> getType() {
@@ -77,6 +88,14 @@ public class SimpleFluidReaction implements IFluidReaction<FluidReactionType<? e
         return world.setBlockState(targetPos, this.result, Block.NOTIFY_ALL) ? this.getResult() : null;
     }
 
+
+    public StateIngredient getSurroundingIngredient() {
+        return surroundingIngredient.orElse(StateIngredient.EMPTY);
+    }
+
+    public StateIngredient getVerticalIngredient() {
+        return verticalIngredient.orElse(StateIngredient.EMPTY);
+    }
 
     protected boolean checkSurrounding(BlockView world, BlockPos sourcePos, BlockPos pos) {
         final FluidSettings settings = world.getFluidState(sourcePos).getFluid().getSettings();

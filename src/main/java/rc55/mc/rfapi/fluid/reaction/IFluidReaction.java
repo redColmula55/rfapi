@@ -5,9 +5,11 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
@@ -15,6 +17,7 @@ import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import rc55.mc.rfapi.RFApiMain;
+import rc55.mc.rfapi.data.ByteBufSerializer;
 import rc55.mc.rfapi.data.FluidIngredient;
 import rc55.mc.rfapi.data.ResourceMap;
 import rc55.mc.rfapi.data.ResourceReloadListenerImpl;
@@ -53,8 +56,26 @@ public interface IFluidReaction<T extends FluidReactionType<?>> {
         }
     };
 
+    ByteBufSerializer<IFluidReaction<?>> BASE_SYNCHRONIZER = new ByteBufSerializer<>() {
+        @SuppressWarnings("unchecked")
+        @Override
+        public PacketByteBuf toByteBuf(IFluidReaction<?> obj) {
+            PacketByteBuf buf = PacketByteBufs.create();
+            buf.writeVarInt(obj.getType().getRawId());
+            ByteBufSerializer<IFluidReaction<?>> codec = (ByteBufSerializer<IFluidReaction<?>>) obj.getType().byteBufCodec();
+            ByteBufSerializer.write(obj, codec, buf);
+            return buf;
+        }
+
+        @Override
+        public IFluidReaction<?> fromByteBuf(PacketByteBuf buf) {
+            FluidReactionType<?> type = FluidReactionType.byRawId(buf.readVarInt());
+            return ByteBufSerializer.read(type.byteBufCodec(), buf);
+        }
+    };
+
     ResourceMap<Fluid, IFluidReaction<?>> CACHE = new ResourceMap<>(true, r -> r.getSource().stream()
-            .flatMap(FluidIngredient.Entry::stream).collect(Collectors.toList())
+            .flatMap(FluidIngredient.Entry::stream).collect(Collectors.toList()), BASE_SYNCHRONIZER
     );
 
     ResourceReloadListenerImpl<IFluidReaction<?>> RELOAD_LISTENER = ResourceReloadListenerImpl.ofServer(

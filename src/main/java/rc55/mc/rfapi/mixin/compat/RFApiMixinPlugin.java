@@ -1,9 +1,9 @@
 package rc55.mc.rfapi.mixin.compat;
 
-import net.fabricmc.loader.impl.FabricLoaderImpl;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
+import rc55.mc.rfapi.compat.CompatUtil;
 import rc55.mc.rfapi.mixin.compat.client.FluidRendererMixin;
 
 import java.util.List;
@@ -22,7 +22,7 @@ public final class RFApiMixinPlugin implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         if (mixinClassName.equals(FluidRendererMixin.class.getName())) {
-            return FabricLoaderImpl.INSTANCE.isModLoaded("sodium");
+            return CompatUtil.hasSodium();
         }
         return true;
     }

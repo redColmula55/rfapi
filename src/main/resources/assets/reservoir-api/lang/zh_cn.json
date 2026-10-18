@@ -15,5 +15,9 @@
   "text.autoconfig.reservoir-api.option.drawFluidBlockOutline": "选中流体方块",
   "text.autoconfig.reservoir-api.option.clearLavaFog": "清晰岩浆迷雾",
   "text.autoconfig.reservoir-api.option.clearSnowFog": "清晰细雪迷雾",
-  "text.autoconfig.reservoir-api.option.replaceVanillaFog": "对原版标签应用自定义迷雾（若有）"
+  "text.autoconfig.reservoir-api.option.replaceVanillaFog": "对原版标签应用自定义迷雾（若有）",
+
+  "text.chance": "几率： %s%%",
+  "text.chance.never": "几率：从不（0%%）",
+  "text.chance.always": "几率：必定（100%%）"
 }

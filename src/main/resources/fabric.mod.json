@@ -27,6 +27,12 @@
 		],
         "modmenu": [
           "rc55.mc.rfapi.RFApiModMenuImpl"
+        ],
+        "rei_client": [
+          "rc55.mc.rfapi.RFApiReiClientImpl"
+        ],
+        "rei_common": [
+          "rc55.mc.rfapi.RFApiReiServerImpl"
         ]
 	},
 	"mixins": [

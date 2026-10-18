@@ -2,10 +2,12 @@ package rc55.mc.rfapi.data;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.state.State;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,12 +24,29 @@ public class StateIngredient implements Predicate<State<?, ?>> {
         this.validFluids = validFluids;
     }
 
+    /**
+     * @deprecated Use {@link #of(Optional, Optional)} instead. Preserved for compatibility only.
+     */
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    @Deprecated
     public StateIngredient(Optional<@Nullable BlockIngredient> validBlocks, Optional<@Nullable FluidIngredient> validFluids) {
         this(validBlocks.orElse(BlockIngredient.EMPTY), validFluids.orElse(FluidIngredient.EMPTY));
     }
 
+    public static StateIngredient of(@Nullable BlockIngredient validBlocks, @Nullable FluidIngredient validFluids) {
+        return of(Optional.ofNullable(validBlocks), Optional.ofNullable(validFluids));
+    }
+
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    public static StateIngredient of(Optional<@Nullable BlockIngredient> validBlocks, Optional<@Nullable FluidIngredient> validFluids) {
+        if (validBlocks.isEmpty() && validFluids.isEmpty()) {
+            return EMPTY;
+        }
+        return new StateIngredient(validBlocks, validFluids);
+    }
+
     public static StateIngredient fromBlocks(@Nullable BlockIngredient validBlocks) {
-        return new StateIngredient(Optional.ofNullable(validBlocks), Optional.empty());
+        return of(validBlocks, null);
     }
 
     public static StateIngredient fromBlocks(@NotNull BlockIngredient.Builder builder) {
@@ -39,7 +58,7 @@ public class StateIngredient implements Predicate<State<?, ?>> {
     }
 
     public static StateIngredient fromFluids(@Nullable FluidIngredient validFluids) {
-        return new StateIngredient(Optional.empty(), Optional.ofNullable(validFluids));
+        return of(null, validFluids);
     }
 
     public static StateIngredient fromFluids(@NotNull FluidIngredient.Builder builder) {
@@ -90,5 +109,32 @@ public class StateIngredient implements Predicate<State<?, ?>> {
 
     public FluidIngredient getValidFluids() {
         return validFluids;
+    }
+
+    public enum Synchronizer implements ByteBufSerializer<StateIngredient> {
+        INSTANCE;
+
+        @Override
+        public PacketByteBuf toByteBuf(StateIngredient obj) {
+            if (obj == EMPTY) {
+                return PacketByteBufs.empty();
+            }
+
+            PacketByteBuf buf = PacketByteBufs.create();
+            ByteBufSerializer.write(obj.validBlocks, BlockIngredient.Synchronizer.INSTANCE, buf);
+            ByteBufSerializer.write(obj.validFluids, FluidIngredient.Synchronizer.INSTANCE, buf);
+            return buf;
+        }
+
+        @Override
+        public StateIngredient fromByteBuf(PacketByteBuf buf) {
+            if (buf.readableBytes() == 0) {
+                return EMPTY;
+            }
+
+            BlockIngredient block = ByteBufSerializer.read(BlockIngredient.Synchronizer.INSTANCE, buf);
+            FluidIngredient fluid = ByteBufSerializer.read(FluidIngredient.Synchronizer.INSTANCE, buf);
+            return new StateIngredient(block, fluid);
+        }
     }
 }

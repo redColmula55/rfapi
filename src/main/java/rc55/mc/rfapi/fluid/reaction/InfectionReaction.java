@@ -11,6 +11,7 @@ import net.minecraft.state.property.Property;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
+import rc55.mc.rfapi.data.ByteBufSerializer;
 import rc55.mc.rfapi.data.CodecHelper;
 import rc55.mc.rfapi.data.FluidIngredient;
 import rc55.mc.rfapi.fluid.FluidHelper;
@@ -41,6 +42,13 @@ public class InfectionReaction implements IFluidReaction<FluidReactionType<Infec
             FluidIngredient.CODEC.fieldOf("target").forGetter(r -> r.target),
             CodecHelper.CHANCE.optionalFieldOf("chance", 1f).forGetter(r -> r.chance)
     ).apply(i, InfectionReaction::new));
+
+    public static final ByteBufSerializer<InfectionReaction> BUF_CODEC = ByteBufSerializer.create(
+            InfectionReaction::new,
+            r -> r.source, ByteBufSerializer.FLUID,
+            r -> r.target, FluidIngredient.Synchronizer.INSTANCE,
+            r -> r.chance, ByteBufSerializer.FLOAT
+    );
 
     @Override
     public FluidReactionType<InfectionReaction> getType() {

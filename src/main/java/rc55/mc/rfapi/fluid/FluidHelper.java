@@ -1,5 +1,9 @@
 package rc55.mc.rfapi.fluid;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandler;
+import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -35,7 +39,7 @@ public class FluidHelper {
     /**
      * Calculates if a fluid can flow "into" another fluid(treat that fluid like air and flow through)
      * This handles {@link FluidReactionType#FLOW_INTO} logics so it needs to be hooked to vanilla fluids
-     * Here we extract it into a static method so we can perform the hook with {@linkplain rc55.mc.rfapi.mixin.FluidStateMixin#rfapi$hookCustomFlowIntoLogic(Fluid, FluidState, BlockView, BlockPos, Fluid, Direction)}  mixins}
+     * Here we extract it into a static method so we can perform the hook with {@linkplain rc55.mc.rfapi.mixin.FluidStateMixin#rfapi$hookCustomFlowIntoLogic(Fluid, FluidState, BlockView, BlockPos, Fluid, Direction) mixins}
      * @param self The fluid instance which tries to call this method
      * @param state Fluid state to flow into
      * @param world World instance
@@ -256,5 +260,20 @@ public class FluidHelper {
 
     public static Text getName(@Nullable FluidReference<?> fluid) {
         return fluid == null ? Blocks.AIR.getName() : Text.translatable(getTranslationKey(fluid));
+    }
+
+    @Environment(EnvType.CLIENT)
+    public static int getRenderColor(FluidState state, @Nullable BlockRenderView world, @Nullable BlockPos pos) {
+        return getFluidRenderHandler(state.getFluid()).getFluidColor(world, pos, state);
+    }
+
+    @Environment(EnvType.CLIENT)
+    public static FluidRenderHandler getFluidRenderHandler(Fluid fluid) {
+        FluidRenderHandler handler = FluidRenderHandlerRegistry.INSTANCE.get(fluid);
+        if (handler == null) {
+            handler = FluidRenderHandlerRegistry.INSTANCE.get(fluid.isIn(FluidTags.LAVA) ? Fluids.LAVA : Fluids.WATER);
+        }
+
+        return handler;
     }
 }

@@ -1,14 +1,19 @@
 package rc55.mc.rfapi;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.item.BucketItem;
 import net.minecraft.text.Text;
 import rc55.mc.rfapi.fluid.FluidSettings;
+import rc55.mc.rfapi.fluid.reaction.IFluidReaction;
 import rc55.mc.rfapi.item.ExtendedBucketItem;
 
 import java.util.function.Consumer;
 
+@Environment(EnvType.CLIENT)
 public class RFApiClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
@@ -24,6 +29,13 @@ public class RFApiClient implements ClientModInitializer {
                 } else {
                     displayTemperature(list::add, "tooltip.reservoir-api.bucket.temperature", FluidSettings.get(bucket.fluid).getTemperature());
                 }
+            }
+        });
+
+        ClientPlayNetworking.registerGlobalReceiver(IFluidReaction.RELOAD_LISTENER.getFabricId(), (client, handler, buf, responseSender) -> {
+            // On local server, client/server already shared the same cache, thus giving up syncing
+            if (!client.isConnectedToLocalServer()) {
+                IFluidReaction.CACHE.fromByteBuf(buf, client::execute);
             }
         });
     }

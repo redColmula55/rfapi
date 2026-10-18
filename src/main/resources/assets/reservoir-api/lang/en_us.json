@@ -15,5 +15,9 @@
   "text.autoconfig.reservoir-api.option.drawFluidBlockOutline": "Fluid block targetable",
   "text.autoconfig.reservoir-api.option.clearLavaFog": "Clearer fog in Lava",
   "text.autoconfig.reservoir-api.option.clearSnowFog": "Clearer fog in Powder Snow",
-  "text.autoconfig.reservoir-api.option.replaceVanillaFog": "Apply custom fog(if present) even in vanilla tags"
+  "text.autoconfig.reservoir-api.option.replaceVanillaFog": "Apply custom fog(if present) even in vanilla tags",
+
+  "text.chance": "Chance: %s%%",
+  "text.chance.never": "Chance: Never(0%%)",
+  "text.chance.always": "Chance: Always(100%%)"
 }

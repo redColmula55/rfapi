@@ -2,8 +2,10 @@ package rc55.mc.rfapi.data;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -16,6 +18,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class BlockIngredient implements Predicate<Block> {
@@ -155,6 +158,45 @@ public class BlockIngredient implements Predicate<Block> {
 
         public BlockIngredient build() {
             return new BlockIngredient(this.entries);
+        }
+    }
+
+    public enum Synchronizer implements ByteBufSerializer<BlockIngredient> {
+        INSTANCE;
+
+        @Override
+        public PacketByteBuf toByteBuf(BlockIngredient obj) {
+            if (obj == EMPTY) {
+                return PacketByteBufs.empty();
+            }
+            PacketByteBuf buf = PacketByteBufs.create();
+            final List<Block> fluids = new ArrayList<>(obj.matching.size());
+            final List<TagKey<Block>> tags = new ArrayList<>(obj.matching.size());
+            obj.matching.forEach(entry -> {
+                if (entry.block != null) {
+                    fluids.add(entry.block);
+                } else if (entry.tag != null) {
+                    tags.add(entry.tag);
+                }
+            });
+            buf.writeIntArray(fluids.stream().mapToInt(Registries.BLOCK::getRawId).toArray());
+            buf.writeVarInt(tags.size());
+            tags.forEach(tag -> buf.writeString(tag.id().toString()));
+            return buf;
+        }
+
+        @Override
+        public BlockIngredient fromByteBuf(PacketByteBuf buf) {
+            if (buf.readableBytes() == 0) {
+                return EMPTY;
+            }
+            final Builder builder = builder();
+            IntStream.of(buf.readIntArray()).mapToObj(Registries.BLOCK::get).forEach(builder::add);
+            int tagsSize = buf.readVarInt();
+            for (int i = 0; i < tagsSize; i++) {
+                builder.add(TagKey.of(RegistryKeys.BLOCK, Identifier.tryParse(buf.readString())));
+            }
+            return builder.build();
         }
     }
 }

@@ -2,6 +2,7 @@ package rc55.mc.rfapi.data;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import io.netty.handler.codec.DecoderException;
@@ -14,19 +15,21 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import rc55.mc.rfapi.RFApiMain;
+import org.slf4j.Logger;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 public class ResourceReloadListenerImpl<T> implements SimpleSynchronousResourceReloadListener {
     private final ResourceType type;
     private final Identifier id;
     private final String path;
     private final ResourceMap<?, T> resourceMap;
+    private final Pattern resPathPattern;
 
     private final @Nullable Codec<T> codec;
     private final @Nullable Function<JsonElement, T> parser;
@@ -38,6 +41,7 @@ public class ResourceReloadListenerImpl<T> implements SimpleSynchronousResourceR
         this.parser = null;
         this.resourceMap = resourceMap;
         this.type = type;
+        this.resPathPattern = Pattern.compile(path + "[\\w_\\-/]+.json");
     }
 
     public ResourceReloadListenerImpl(ResourceType type, Identifier id, String path, ResourceMap<?, T> resourceMap, @NotNull Function<JsonElement, T> resourceParser) {
@@ -47,6 +51,7 @@ public class ResourceReloadListenerImpl<T> implements SimpleSynchronousResourceR
         this.parser = resourceParser;
         this.resourceMap = resourceMap;
         this.type = type;
+        this.resPathPattern = Pattern.compile(path + "[\\w_\\-/]+.json");
     }
 
     /**
@@ -60,6 +65,8 @@ public class ResourceReloadListenerImpl<T> implements SimpleSynchronousResourceR
     public static <T> ResourceReloadListenerImpl<T> ofServer(Identifier id, Codec<T> codec, ResourceMap<?, T> cache) {
         return new ResourceReloadListenerImpl<>(ResourceType.SERVER_DATA, id, id.getPath(), codec, cache).register();
     }
+
+    protected static final Logger LOGGER = LogUtils.getLogger();
 
     public ResourceReloadListenerImpl<T> register() {
         ResourceManagerHelper.get(this.type).registerReloadListener(this);
@@ -95,12 +102,12 @@ public class ResourceReloadListenerImpl<T> implements SimpleSynchronousResourceR
                     throw new IllegalStateException("How");
                 }
                 // Remove prefix & extension for the resource id
-                resources.put(id.withPath(s -> s.matches("\\w+/[\\w/.]+") ? s.substring(s.indexOf('/') + 1, s.length() - 5) : s), result);
+                resources.put(id.withPath(s -> this.resPathPattern.matcher(s).matches() ? s.substring(this.path.length(), s.length() - 5) : s), result);
             } catch (Throwable e) {
-                RFApiMain.LOGGER.error("Failed to load resource {}: {}", entry.getKey(), e);
+                LOGGER.error("Failed to load resource {}: {}", entry.getKey(), e);
             }
         }
         this.resourceMap.reload(resources);
-        RFApiMain.LOGGER.info("Loaded {}x {} from enabled data packs.", resources.size(), this.getFabricId());
+        LOGGER.info("Loaded {}x {} from enabled data packs.", resources.size(), this.getFabricId());
     }
 }

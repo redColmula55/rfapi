@@ -2,8 +2,10 @@ package rc55.mc.rfapi.data;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -11,6 +13,7 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import rc55.mc.rfapi.fluid.FluidReference;
 import rc55.mc.rfapi.fluid.FluidRegistry;
+import rc55.mc.rfapi.fluid.FluidTags;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,6 +21,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -160,6 +164,10 @@ public class FluidIngredient implements Predicate<Fluid> {
             return this;
         }
 
+        public Builder add(FluidReference<?> fluid) {
+            return this.add(fluid.getStill()).add(fluid.getFlowing());
+        }
+
         public Builder add(TagKey<Fluid> tag) {
             this.entries.add(new Entry(tag));
             return this;
@@ -167,6 +175,45 @@ public class FluidIngredient implements Predicate<Fluid> {
 
         public FluidIngredient build() {
             return new FluidIngredient(this.entries);
+        }
+    }
+
+    public enum Synchronizer implements ByteBufSerializer<FluidIngredient> {
+        INSTANCE;
+
+        @Override
+        public PacketByteBuf toByteBuf(FluidIngredient obj) {
+            if (obj == EMPTY) {
+                return PacketByteBufs.empty();
+            }
+            PacketByteBuf buf = PacketByteBufs.create();
+            final List<Fluid> fluids = new ArrayList<>(obj.matching.size());
+            final List<TagKey<Fluid>> tags = new ArrayList<>(obj.matching.size());
+            obj.matching.forEach(entry -> {
+                if (entry.fluid != null) {
+                    fluids.add(entry.fluid);
+                } else if (entry.tag != null) {
+                    tags.add(entry.tag);
+                }
+            });
+            buf.writeIntArray(fluids.stream().mapToInt(FluidRegistry::getRawId).toArray());
+            buf.writeVarInt(tags.size());
+            tags.forEach(tag -> buf.writeString(tag.id().toString()));
+            return buf;
+        }
+
+        @Override
+        public FluidIngredient fromByteBuf(PacketByteBuf buf) {
+            if (buf.readableBytes() == 0) {
+                return EMPTY;
+            }
+            final Builder builder = builder();
+            IntStream.of(buf.readIntArray()).mapToObj(FluidRegistry::get).forEach(builder::add);
+            int tagsSize = buf.readVarInt();
+            for (int i = 0; i < tagsSize; i++) {
+                builder.add(FluidTags.of(Identifier.tryParse(buf.readString())));
+            }
+            return builder.build();
         }
     }
 }

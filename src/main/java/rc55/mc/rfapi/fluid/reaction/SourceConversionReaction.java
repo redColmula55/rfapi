@@ -8,6 +8,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
+import rc55.mc.rfapi.data.ByteBufSerializer;
 import rc55.mc.rfapi.data.CodecHelper;
 import rc55.mc.rfapi.data.FluidIngredient;
 
@@ -34,6 +35,14 @@ public class SourceConversionReaction implements IFluidReaction<FluidReactionTyp
             FluidIngredient.CODEC.fieldOf("ingredient").forGetter(r -> r.ingredient),
             CodecHelper.BLOCK_STATE.fieldOf("result").forGetter(r -> r.result)
     ).apply(i, SourceConversionReaction::new));
+
+    public static final ByteBufSerializer<SourceConversionReaction> BUF_CODEC = ByteBufSerializer.create(
+            SourceConversionReaction::new,
+            r -> r.source, FluidIngredient.Synchronizer.INSTANCE,
+            r -> r.chance, ByteBufSerializer.FLOAT,
+            r -> r.ingredient, FluidIngredient.Synchronizer.INSTANCE,
+            r -> r.result, ByteBufSerializer.BLOCK_STATE
+    );
 
     @Override
     public FluidReactionType<SourceConversionReaction> getType() {

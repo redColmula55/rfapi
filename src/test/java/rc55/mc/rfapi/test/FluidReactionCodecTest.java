@@ -8,6 +8,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.RedstoneLampBlock;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.FluidTags;
 import org.junit.jupiter.api.Assertions;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import rc55.mc.rfapi.data.BlockIngredient;
 import rc55.mc.rfapi.data.FluidIngredient;
 import rc55.mc.rfapi.data.StateIngredient;
+import rc55.mc.rfapi.fluid.FluidReference;
 import rc55.mc.rfapi.fluid.reaction.*;
 
 import java.io.IOException;
@@ -33,6 +35,19 @@ public class FluidReactionCodecTest {
     }
 
     @Test
+    void ingredientBufCodecTest() {
+        final FluidIngredient fi = FluidIngredient.of(FluidReference.VANILLA_LAVA);
+        PacketByteBuf buf = FluidIngredient.Synchronizer.INSTANCE.toByteBuf(fi);
+        Assertions.assertEquals(fi, FluidIngredient.Synchronizer.INSTANCE.fromByteBuf(buf));
+        final BlockIngredient bi = BlockIngredient.of(Blocks.STONE);
+        buf = BlockIngredient.Synchronizer.INSTANCE.toByteBuf(bi);
+        Assertions.assertEquals(bi, BlockIngredient.Synchronizer.INSTANCE.fromByteBuf(buf));
+        final StateIngredient si = StateIngredient.of(bi, fi);
+        buf = StateIngredient.Synchronizer.INSTANCE.toByteBuf(si);
+        Assertions.assertEquals(si, StateIngredient.Synchronizer.INSTANCE.fromByteBuf(buf));
+    }
+
+    @Test
     void simpleDecodeTest() {
         IFluidReaction<?> result = loadReaction("/simple.json");
         Assertions.assertInstanceOf(SimpleFluidReaction.class, result);
@@ -45,6 +60,7 @@ public class FluidReactionCodecTest {
                 Blocks.REDSTONE_LAMP.getDefaultState().with(RedstoneLampBlock.LIT, true)
         );
         assertReactionSame(expected, result);
+        validateByteBufSerializer(expected);
     }
 
     @Test
@@ -56,11 +72,12 @@ public class FluidReactionCodecTest {
                 FluidIngredient.builder().add(Fluids.WATER).add(FluidTags.LAVA).build(),
                 0.87f,
                 Optional.of(StateIngredient.fromBlocks(BlockIngredient.builder().add(BlockTags.BAMBOO_BLOCKS))),
-                Optional.of(new StateIngredient(Optional.of(BlockIngredient.of(Blocks.STONE, Blocks.BEDROCK)), Optional.of(FluidIngredient.of(Fluids.EMPTY)))),
+                Optional.of(StateIngredient.of(BlockIngredient.of(Blocks.STONE, Blocks.BEDROCK),FluidIngredient.of(Fluids.EMPTY))),
                 Blocks.AIR.getDefaultState(),
                 Blocks.REDSTONE_LAMP.getDefaultState().with(RedstoneLampBlock.LIT, true)
         );
         assertReactionSame(expected, result);
+        validateByteBufSerializer(expected);
     }
 
     @Test
@@ -75,6 +92,7 @@ public class FluidReactionCodecTest {
                 Blocks.STONE.getDefaultState()
         );
         assertReactionSame(expected, result);
+        validateByteBufSerializer(expected);
     }
 
     @Test
@@ -89,6 +107,7 @@ public class FluidReactionCodecTest {
                 Blocks.GRASS_BLOCK.getDefaultState()
         );
         assertReactionSame(expected, result);
+        validateByteBufSerializer(expected);
     }
 
     @Test
@@ -102,6 +121,7 @@ public class FluidReactionCodecTest {
                 0.5f
         );
         assertReactionSame(expected, result);
+        validateByteBufSerializer(expected);
     }
 
     static JsonElement getJson(String path) {
@@ -121,5 +141,10 @@ public class FluidReactionCodecTest {
         Assertions.assertEquals(expected.getChance(), actual.getChance());
         Assertions.assertEquals(expected.getSource(), actual.getSource());
         Assertions.assertEquals(expected.getResult(), actual.getResult());
+    }
+
+    static void validateByteBufSerializer(IFluidReaction<?> expected) {
+        var buf = IFluidReaction.BASE_SYNCHRONIZER.toByteBuf(expected);
+        assertReactionSame(expected, IFluidReaction.BASE_SYNCHRONIZER.fromByteBuf(buf));
     }
 }

@@ -7,6 +7,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
+import rc55.mc.rfapi.data.ByteBufSerializer;
 import rc55.mc.rfapi.data.CodecHelper;
 import rc55.mc.rfapi.data.FluidIngredient;
 import rc55.mc.rfapi.data.StateIngredient;
@@ -16,6 +17,7 @@ import java.util.Optional;
 public class SimpleFlowableFluidReaction extends SimpleFluidReaction {
     protected final BlockState flowingResult;
 
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     public SimpleFlowableFluidReaction(
             FluidIngredient source, float chance, Optional<@Nullable StateIngredient> surroundingIngredient,
             Optional<@Nullable StateIngredient> verticalIngredient, BlockState stillResult, BlockState flowingResult
@@ -32,6 +34,16 @@ public class SimpleFlowableFluidReaction extends SimpleFluidReaction {
             CodecHelper.BLOCK_STATE.fieldOf("still_result").forGetter(r -> r.result),
             CodecHelper.BLOCK_STATE.fieldOf("flowing_result").forGetter(r -> r.flowingResult)
     ).apply(i, SimpleFlowableFluidReaction::new));
+
+    public static final ByteBufSerializer<SimpleFlowableFluidReaction> BUF_CODEC = ByteBufSerializer.create(
+            SimpleFlowableFluidReaction::new,
+            r -> r.source, FluidIngredient.Synchronizer.INSTANCE,
+            r -> r.chance, ByteBufSerializer.FLOAT,
+            r -> r.surroundingIngredient, ByteBufSerializer.optional(StateIngredient.Synchronizer.INSTANCE, StateIngredient.EMPTY),
+            r -> r.verticalIngredient, ByteBufSerializer.optional(StateIngredient.Synchronizer.INSTANCE, StateIngredient.EMPTY),
+            r -> r.result, ByteBufSerializer.BLOCK_STATE,
+            r -> r.flowingResult, ByteBufSerializer.BLOCK_STATE
+    );
 
     @Override
     public FluidReactionType<? extends SimpleFlowableFluidReaction> getType() {

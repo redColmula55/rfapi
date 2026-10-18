@@ -2,8 +2,6 @@ package rc55.mc.rfapi;
 
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 
 @Config(name = RFApiMain.MODID)
 @Config.Gui.Background("minecraft:textures/block/dirt.png")
@@ -31,12 +29,13 @@ public class RFApiConfigs implements ConfigData {
      */
     public boolean drawFluidBlockOutline = false;
 
-    @Environment(EnvType.CLIENT)
+    // May cause crash when the annotation applied
+    //@Environment(EnvType.CLIENT)
     public boolean clearLavaFog = false;
 
-    @Environment(EnvType.CLIENT)
+    //@Environment(EnvType.CLIENT)
     public boolean clearSnowFog = false;
 
-    @Environment(EnvType.CLIENT)
+    //@Environment(EnvType.CLIENT)
     public boolean replaceVanillaFog = true;
 }
