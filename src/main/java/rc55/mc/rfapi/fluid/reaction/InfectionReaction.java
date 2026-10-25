@@ -92,4 +92,8 @@ public class InfectionReaction implements IFluidReaction<FluidReactionType<Infec
         }
         return newState;
     }
+
+    public FluidIngredient getTarget() {
+        return target;
+    }
 }

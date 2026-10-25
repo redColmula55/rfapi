@@ -17,7 +17,16 @@
   "text.autoconfig.reservoir-api.option.clearSnowFog": "清晰细雪迷雾",
   "text.autoconfig.reservoir-api.option.replaceVanillaFog": "对原版标签应用自定义迷雾（若有）",
 
-  "text.chance": "几率： %s%%",
-  "text.chance.never": "几率：从不（0%%）",
-  "text.chance.always": "几率：必定（100%%）"
+  "fluid_reaction.minecraft.simple": "流体反应",
+  "fluid_reaction.minecraft.flowable": "流体反应",
+  "fluid_reaction.minecraft.flow_into": "流体流入反应",
+  "fluid_reaction.reservoir-api.source_conversion": "流体源头合并反应",
+  "fluid_reaction.reservoir-api.infection": "流体感染",
+
+  "text.reservoir-api.rei.display.chance": "几率： %s%%",
+  "text.reservoir-api.rei.display.chance.never": "几率：从不（0%%）",
+  "text.reservoir-api.rei.display.chance.always": "几率：必定（100%%）",
+  "text.reservoir-api.rei.slot.input": "输入材料。反应结果将在此处生成，并替换该位置的方块",
+  "text.reservoir-api.rei.slot.still_result": "当输入材料是静态的（源头）时生成",
+  "text.reservoir-api.rei.slot.flowing_result": "当输入材料是流动的（水流）时生成"
 }

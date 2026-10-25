@@ -53,8 +53,8 @@ public class SimpleFluidReaction implements IFluidReaction<FluidReactionType<? e
             SimpleFluidReaction::new,
             r -> r.source, FluidIngredient.Synchronizer.INSTANCE,
             r -> r.chance, ByteBufSerializer.FLOAT,
-            r -> r.surroundingIngredient, ByteBufSerializer.optional(StateIngredient.Synchronizer.INSTANCE, StateIngredient.EMPTY),
-            r -> r.verticalIngredient, ByteBufSerializer.optional(StateIngredient.Synchronizer.INSTANCE, StateIngredient.EMPTY),
+            r -> r.surroundingIngredient, StateIngredient.Synchronizer.OPTIONAL,
+            r -> r.verticalIngredient, StateIngredient.Synchronizer.OPTIONAL,
             r -> r.result, ByteBufSerializer.BLOCK_STATE
     );
 

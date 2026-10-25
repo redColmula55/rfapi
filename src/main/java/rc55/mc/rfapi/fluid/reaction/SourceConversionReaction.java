@@ -66,16 +66,30 @@ public class SourceConversionReaction implements IFluidReaction<FluidReactionTyp
 
     @Override
     public boolean checkReaction(WorldAccess world, BlockPos sourcePos, BlockPos targetPos) {
+        // Make a mutable pos to prevent creating new objects
+        BlockPos.Mutable pos = new BlockPos.Mutable().set(targetPos, Direction.DOWN);
+        boolean bl = this.checkRandom(world)
+                // When source trying to trigger reaction, the target pos may be taken by the target fluid(usually when target flows faster)
+                // This case we still want the reaction to perform, so we make this dirty hack
+                && (world.getBlockState(targetPos).isAir() || this.ingredient.test(world.getFluidState(targetPos)))
+                && world.getBlockState(pos).isSideSolidFullSquare(world, pos, Direction.UP);
+        if (!bl) return false;
+        // Mutable pos returns to targetPos
+        pos.set(targetPos);
         for (final Direction direction : Direction.Type.HORIZONTAL) {
-            if (this.ingredient.test(world.getFluidState(targetPos.offset(direction)))) {
+            if (this.ingredient.test(world.getFluidState(pos.set(targetPos, direction)))) {
                 return this.source.test(world.getFluidState(sourcePos));
             }
         }
-        return this.checkRandom(world) && world.getBlockState(targetPos).isAir();
+        return false;
     }
 
     @Override
     public @Nullable BlockState performReaction(WorldAccess world, BlockPos sourcePos, BlockPos targetPos) {
         return world.setBlockState(targetPos, this.getResult(), Block.NOTIFY_ALL) ? this.getResult() : null;
+    }
+
+    public FluidIngredient getIngredient() {
+        return ingredient;
     }
 }

@@ -17,7 +17,16 @@
   "text.autoconfig.reservoir-api.option.clearSnowFog": "Clearer fog in Powder Snow",
   "text.autoconfig.reservoir-api.option.replaceVanillaFog": "Apply custom fog(if present) even in vanilla tags",
 
-  "text.chance": "Chance: %s%%",
-  "text.chance.never": "Chance: Never(0%%)",
-  "text.chance.always": "Chance: Always(100%%)"
+  "fluid_reaction.minecraft.simple": "Fluid Reaction",
+  "fluid_reaction.minecraft.flowable": "Fluid Reaction",
+  "fluid_reaction.minecraft.flow_into": "Fluid Flow-in",
+  "fluid_reaction.reservoir-api.source_conversion": "Fluid Source Conversion",
+  "fluid_reaction.reservoir-api.infection": "Fluid Infection",
+
+  "text.reservoir-api.rei.display.chance": "Chance: %s%%",
+  "text.reservoir-api.rei.display.chance.never": "Chance: Never(0%%)",
+  "text.reservoir-api.rei.display.chance.always": "Chance: Always(100%%)",
+  "text.reservoir-api.rei.slot.input": "Input material, the result will appear here and replace this",
+  "text.reservoir-api.rei.slot.still_result": "Only when \"Input\" is still(fluid source)",
+  "text.reservoir-api.rei.slot.flowing_result": "Only when \"Input\" is flowing"
 }

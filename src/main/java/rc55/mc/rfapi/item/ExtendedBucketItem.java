@@ -32,7 +32,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import rc55.mc.rfapi.fluid.*;
 
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
 
 /**
@@ -53,7 +53,7 @@ public class ExtendedBucketItem extends BucketItem {
      * Key： The empty bucket
      * Value： Map of fluid and their item with this type of bucket
      */
-    public static final Map<BucketItem, Map<Fluid, BucketItem>> BUCKET_ITEM_MAP = new HashMap<>();
+    public static final Map<BucketItem, Map<Fluid, BucketItem>> BUCKET_ITEM_MAP = new IdentityHashMap<>();
 
     /**
      * Empty factor of this bucket
@@ -84,7 +84,7 @@ public class ExtendedBucketItem extends BucketItem {
         this.baseItem = base;
         if (base != Items.BUCKET) {
             if (!BUCKET_ITEM_MAP.containsKey(base)) {
-                BUCKET_ITEM_MAP.put(base, Util.make(new HashMap<>(), map -> map.put(fluid, this)));
+                BUCKET_ITEM_MAP.put(base, Util.make(new IdentityHashMap<>(), map -> map.put(fluid, this)));
             } else {
                 BUCKET_ITEM_MAP.get(base).put(fluid, this);
             }
@@ -107,7 +107,7 @@ public class ExtendedBucketItem extends BucketItem {
         this.maxTemperature = maxTemperature;
         this.baseItem = null;
         if (!BUCKET_ITEM_MAP.containsKey(this)) {
-            BUCKET_ITEM_MAP.put(this, new HashMap<>());
+            BUCKET_ITEM_MAP.put(this, new IdentityHashMap<>());
         }
     }
 

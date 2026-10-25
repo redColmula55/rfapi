@@ -75,4 +75,8 @@ public class FlowIntoReaction implements IFluidReaction<FluidReactionType<FlowIn
     public @Nullable BlockState performReaction(WorldAccess world, BlockPos sourcePos, BlockPos targetPos) {
         return world.setBlockState(targetPos, result, Block.NOTIFY_ALL) ? result : null;
     }
+
+    public FluidIngredient getIngredient() {
+        return ingredient;
+    }
 }

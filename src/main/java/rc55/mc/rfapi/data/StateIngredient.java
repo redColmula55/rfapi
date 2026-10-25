@@ -53,7 +53,7 @@ public class StateIngredient implements Predicate<State<?, ?>> {
         return fromBlocks(builder.build());
     }
 
-    public static StateIngredient fromBlocks(Block... blocks) {
+    public static StateIngredient fromBlocks(@NotNull Block... blocks) {
         return fromBlocks(BlockIngredient.of(blocks));
     }
 
@@ -65,7 +65,7 @@ public class StateIngredient implements Predicate<State<?, ?>> {
         return fromFluids(builder.build());
     }
 
-    public static StateIngredient fromFluids(Fluid... fluids) {
+    public static StateIngredient fromFluids(@NotNull Fluid... fluids) {
         return fromFluids(FluidIngredient.of(fluids));
     }
 
@@ -111,8 +111,11 @@ public class StateIngredient implements Predicate<State<?, ?>> {
         return validFluids;
     }
 
-    public enum Synchronizer implements ByteBufSerializer<StateIngredient> {
-        INSTANCE;
+    public static final class Synchronizer implements ByteBufSerializer<StateIngredient> {
+        public static final Synchronizer INSTANCE = new Synchronizer();
+        public static final ByteBufSerializer<Optional<StateIngredient>> OPTIONAL = ByteBufSerializer.optional(INSTANCE, EMPTY);
+
+        private Synchronizer(){}
 
         @Override
         public PacketByteBuf toByteBuf(StateIngredient obj) {

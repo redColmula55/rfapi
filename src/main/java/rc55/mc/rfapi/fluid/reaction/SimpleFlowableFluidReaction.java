@@ -39,8 +39,8 @@ public class SimpleFlowableFluidReaction extends SimpleFluidReaction {
             SimpleFlowableFluidReaction::new,
             r -> r.source, FluidIngredient.Synchronizer.INSTANCE,
             r -> r.chance, ByteBufSerializer.FLOAT,
-            r -> r.surroundingIngredient, ByteBufSerializer.optional(StateIngredient.Synchronizer.INSTANCE, StateIngredient.EMPTY),
-            r -> r.verticalIngredient, ByteBufSerializer.optional(StateIngredient.Synchronizer.INSTANCE, StateIngredient.EMPTY),
+            r -> r.surroundingIngredient, StateIngredient.Synchronizer.OPTIONAL,
+            r -> r.verticalIngredient, StateIngredient.Synchronizer.OPTIONAL,
             r -> r.result, ByteBufSerializer.BLOCK_STATE,
             r -> r.flowingResult, ByteBufSerializer.BLOCK_STATE
     );
@@ -54,5 +54,19 @@ public class SimpleFlowableFluidReaction extends SimpleFluidReaction {
     public @Nullable BlockState performReaction(WorldAccess world, BlockPos sourcePos, BlockPos targetPos) {
         BlockState result = world.getFluidState(sourcePos).isStill() ? this.result : this.flowingResult;
         return world.setBlockState(targetPos, result, Block.NOTIFY_ALL) ? result : null;
+    }
+
+    @Deprecated
+    @Override
+    public BlockState getResult() {
+        return super.getResult();
+    }
+
+    public BlockState getStillResult() {
+        return this.result;
+    }
+
+    public BlockState getFlowingResult() {
+        return flowingResult;
     }
 }

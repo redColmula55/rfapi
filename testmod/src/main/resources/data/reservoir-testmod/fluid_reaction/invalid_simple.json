@@ -1,0 +1,8 @@
+{
+  "__comment": "This SimpleFluidReaction has neither ingredients, will raise an IllegalArgumentException(caught by ResourceReloadListenerImpl)",
+  "type": "minecraft:simple",
+  "result": "minecraft:command_block",
+  "source": [
+    "#minecraft:lava"
+  ]
+}
